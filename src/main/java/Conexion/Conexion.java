@@ -7,7 +7,7 @@ public class Conexion {
     Connection conectar ;
     String usuario = "root";
     String clave = "Dabson12";
-    String baseD = "estudio_dabson";
+    String baseD = "biblioteca_mix";
     String ubicacion = "localhost";
     String puerto = "3306";
     String url ="jdbc:mysql://" + ubicacion + ":" + puerto + "/" + baseD;
