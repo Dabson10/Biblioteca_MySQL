@@ -19,6 +19,11 @@ public class Ejemplar {
 
 
     public String mostrarDatos(){
-        return "";
+        String dispo = (disponible) ? "Disponible" : "Prestado" ;
+        return "Libro: " + libroInfo.mostrarDatos() +
+                "\nUbicación: " + ubicacion +
+                "\nTipo: " + tipo +
+                "\nCodigo ejemplar: " + codigoEjemplar +
+                "\nDisponible: " + dispo;
     }
 }

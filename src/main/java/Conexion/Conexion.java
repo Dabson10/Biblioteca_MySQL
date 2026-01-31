@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class Conexion {
-    Connection conectar ;
+    Connection conectar = null;
     String usuario = "root";
     String clave = "Dabson12";
     String baseD = "biblioteca_mix";
@@ -12,7 +12,7 @@ public class Conexion {
     String puerto = "3306";
     String url ="jdbc:mysql://" + ubicacion + ":" + puerto + "/" + baseD;
 
-    public void conectarse(){
+    public Connection conectarse(){
 
         try{
             //La siguiente línea accede a la carpeta external libraries y sigue el orden,
@@ -24,6 +24,7 @@ public class Conexion {
         }catch(Exception e){
             System.out.println("Problemas con la conexión: " + e.getMessage());
         }
+        return conectar;
     }
 
 }

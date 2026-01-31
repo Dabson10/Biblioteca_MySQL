@@ -10,6 +10,7 @@ public class Prestamo {
     private Usuario solicitadoPor;
     private LocalDate fechaPrestamo ;
     private LocalDate fechaEntrega;
+    private LocalDate realFechaEntrega;
     private boolean activo;
 
     public Prestamo(String prestamoID, Ejemplar ejemplarPrestado, Usuario solicitadoPor,
@@ -22,12 +23,25 @@ public class Prestamo {
             this.fechaEntrega = fechaEntrega;
         }
     }
-
-    public String mostrarDatos(){
-        return "";
+    public void setRealFechaEntrega(LocalDate fecha){
+        realFechaEntrega = fecha;
     }
 
+    public String mostrarDatos(){
+        //Esta variable sirve para saber si se entrego o no el libro.
+        String entregado = (realFechaEntrega != null)? realFechaEntrega.toString() : "Aun no se entrega.";
 
+        //extra srive para validar si la entrega fue antes o despues, si al comparar fechas es rapido,
+        //pero es mejor tener una nota de que sucedio con el libro
+        String extra =(realFechaEntrega.isAfter(fechaEntrega)) ? "Libro entregado a destiempo." : "Entregado a tiempo.";
 
-
+        return "Libro: " + ejemplarPrestado.mostrarDatos() +
+                "\nID del prestamo: " + prestamoID +
+                "\nSolicitado por: " + solicitadoPor.mostrarDatos() +
+                "\nFecha solicitado: " + fechaPrestamo +
+                "\nFecha limite de entrega: " +
+                "\nSe entrego en la fecha: " + entregado +
+                extra;
+    }
+    
 }

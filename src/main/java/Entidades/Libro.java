@@ -17,7 +17,11 @@ public class Libro {
     }
 
     public String mostrarDatos(){
-        return "";
+        return "Titulo: " + titulo +
+                "Autor: " + autor +
+                "Categoria: " + categoria +
+                "ISBN: " + ISBN +
+                "Prefijo: " + prefijoEjemplar;
     }
 
 }
