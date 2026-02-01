@@ -4,8 +4,9 @@ public class Bibliotecario extends Persona{
 
     private String clave;
 
-    public Bibliotecario(String personaID, String nombres, String apellidos, String correo){
+    public Bibliotecario(String personaID, String nombres, String apellidos, String correo, String clave){
         super(personaID, nombres, apellidos, correo);
+        this.clave = clave;
     }
 
     @Override

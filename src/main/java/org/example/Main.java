@@ -1,8 +1,11 @@
 package org.example;
 
-import Conexion.Conexion;
+import DAO.Conexion;
+import DAO.PersonaDaoImpl;
+import Entidades.Usuarios.Bibliotecario;
+import Entidades.Usuarios.Persona;
 
-import java.sql.Connection;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -11,18 +14,14 @@ public class Main {
 
     public static void main(String[] args) {
         boolean acceso = true;
+
+//        Persona ps= new Bibliotecario("USUA_0002","Kevin", "Almaraz", "tadeo@gmail.com", "perro");
+//        PersonaDaoImpl insert = new PersonaDaoImpl();
+//        insert.agregarPersona(ps, "perro", "Bibliotecario");
         Main principal = new Main();
-        Conexion conect = new Conexion();
-        Connection validar = conect.conectarse();
-        //Este if sirve para validar la conexion a base de datos.
-        //Si regresa un null entonces no mostramos el menu principal
-        if(validar != null){
             while(acceso){
                 acceso = principal.menuPrincipal();
             }
-        }else{
-            System.out.println("No se pudo realiazar la conexion a base de datos.");
-        }
 
     }
 
@@ -31,7 +30,9 @@ public class Main {
     public boolean menuPrincipal(){
         boolean salida = true;
         int opcion = 0;
-        System.out.print("""
+        try{
+
+            System.out.print("""
                 Bienvenido a la biblioteca.
                 ¿Que acción deseas realizar?
                 1.Personas.
@@ -39,18 +40,22 @@ public class Main {
                 3.Prestamos.
                 4.Salir
                 Ingrese la opción:\s""");
-        opcion = sc.nextInt();
+            opcion = sc.nextInt();
 
-        switch(opcion){
-            case 1 ->{}
-            case 2 ->{}
-            case 3->{}
-            case 4 ->{
-                System.out.println("Hasta luego.");
-                sc.close();
-                salida = false;
+            switch(opcion){
+                case 1 ->{}
+                case 2 ->{}
+                case 3 ->{}
+                case 4 ->{
+                    System.out.println("Hasta luego.");
+                    sc.close();
+                    salida = false;
+                }
+                default ->System.out.println("Ingrese una opción valida");
             }
-            default ->System.out.println("Ingrese una opción valida");
+        }catch(InputMismatchException tipo){
+            System.out.println("Ingrese datos correctos por favor: " + tipo.getCause());
+            sc.nextLine();
         }
 
         return salida;
