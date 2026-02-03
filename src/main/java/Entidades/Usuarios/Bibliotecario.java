@@ -8,13 +8,16 @@ public class Bibliotecario extends Persona{
         super(personaID, nombres, apellidos, correo);
         this.clave = clave;
     }
+    public Bibliotecario(String personaID, String nombres, String apellidos, String correo){
+        super(personaID, nombres, apellidos, correo);
+    }
 
     @Override
     public String mostrarDatos(){
         return "Usuario\n" +
                 "Nombre: " + getNombres() +
-                "Apellido" + getApellidos() +
-                "Correo: " + getCorreo() +
-                "ID: " + getPersonaID() ;
+                "\nApellido" + getApellidos() +
+                "\nCorreo: " + getCorreo() +
+                "\nID: " + getPersonaID() ;
     }
 }

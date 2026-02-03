@@ -2,6 +2,7 @@ package DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Conexion {
     Connection conectar = null;
@@ -20,11 +21,21 @@ public class Conexion {
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Dirección formada con los datos de la base de datos y claves.
             conectar = DriverManager.getConnection(url, usuario, clave);
-            System.out.println("Conexión realizada con éxito.");
+            //Se comenta esta parte para que no existan problemas con mostrar el texto continuamente.
+//            System.out.println("Conexión realizada con éxito.");
         }catch(Exception e){
             System.out.println("Problemas con la conexión: " + e.getMessage());
         }
         return conectar;
     }
-
+    public void cerrarConexion(){
+        try{
+            if(conectar != null){
+                //Si la conexión está activa entonces la cerramos
+                conectar.close();
+            }
+        }catch (SQLException e ){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }
+    }
 }

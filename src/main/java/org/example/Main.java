@@ -4,6 +4,7 @@ import DAO.Conexion;
 import DAO.PersonaDaoImpl;
 import Entidades.Usuarios.Bibliotecario;
 import Entidades.Usuarios.Persona;
+import Servicios.UsuariosServicio;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -11,9 +12,11 @@ import java.util.Scanner;
 public class Main {
 
     Scanner sc = new Scanner(System.in);
+    UsuariosServicio servicioUsu = new UsuariosServicio();
 
     public static void main(String[] args) {
         boolean acceso = true;
+
 
 //        Persona ps= new Bibliotecario("USUA_0002","Kevin", "Almaraz", "tadeo@gmail.com", "perro");
 //        PersonaDaoImpl insert = new PersonaDaoImpl();
@@ -33,7 +36,7 @@ public class Main {
         try{
 
             System.out.print("""
-                Bienvenido a la biblioteca.
+                \nBienvenido a la biblioteca.
                 ¿Que acción deseas realizar?
                 1.Personas.
                 2.Libros y Ejemplares.
@@ -43,7 +46,7 @@ public class Main {
             opcion = sc.nextInt();
 
             switch(opcion){
-                case 1 ->{}
+                case 1 -> servicioUsu.menuPersonas();
                 case 2 ->{}
                 case 3 ->{}
                 case 4 ->{

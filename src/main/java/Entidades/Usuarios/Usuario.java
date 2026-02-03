@@ -21,10 +21,10 @@ public class Usuario extends Persona{
     public String mostrarDatos(){
         return "Usuario\n" +
                 "Nombre: " + getNombres() +
-                "Apellido" + getApellidos() +
-                "Correo: " + getCorreo() +
-                "ID: " + getPersonaID() +
-                "Libro prestado: " + libroPrestado.mostrarDatos();
+                "\nApellido" + getApellidos() +
+                "\nCorreo: " + getCorreo() +
+                "\nID: " + getPersonaID() +
+                "\nLibro prestado: " + libroPrestado.mostrarDatos();
     }
 
 }
