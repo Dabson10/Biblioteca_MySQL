@@ -1,6 +1,7 @@
 package Interfaces;
 
 import Entidades.Usuarios.Persona;
+import Entidades.Usuarios.UsuarioDTO;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ public interface PersonaDAO {
     public void editarPersona(Persona datos, String nombre);
     public boolean correoExistente(String correo);
     public String obtenerUltimo(String prefijo);
+    public UsuarioDTO validarCredenciales(String correo);
 //    public List<Persona> listarPersonas();
 
 }

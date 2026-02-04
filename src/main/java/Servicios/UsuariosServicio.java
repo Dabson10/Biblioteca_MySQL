@@ -6,6 +6,7 @@ import Exceptions.CorreoNoValido;
 import Exceptions.UsuarioNoEncontrado;
 import Interfaces.PersonaDAO;
 import Utilidades.GenerarID;
+import Utilidades.Login;
 import Utilidades.OcultarClaves;
 import Utilidades.ValidarCorreo;
 
@@ -18,16 +19,17 @@ import java.util.Scanner;
  *
  */
 public class UsuariosServicio {
-    private Scanner sc = new Scanner(System.in);
-    private PersonaDAO consultas = new PersonaDaoImpl();
+    private final Scanner sc = new Scanner(System.in);
+    private final PersonaDAO consultas = new PersonaDaoImpl();
     ValidarCorreo validarCorreo = new ValidarCorreo();
     GenerarID generarID = new GenerarID();
     OcultarClaves ocultarClaves = new OcultarClaves();
+    Login log = new Login();
 
     public void menuPersonas() {
         try {
             System.out.print("""
-                    \nBienvenido a la seccion personas.
+                    \nBienvenido a la sección personas.
                     ¿Qué acción deseas realizar?
                     1.Acceder a Bibliotecarios.
                     2.Acceder a Usuarios.
@@ -55,10 +57,15 @@ public class UsuariosServicio {
     public void menuBibliotecarios() {
         int opcion = mensajeMenu("Bibliotecarios");
         sc.nextLine();
-
+        boolean acceder;
         switch (opcion) {
             case 1 -> buscarPersona("Bibliotecario");
-            case 2 -> agregarPersona("Bibliotecario");
+            case 2 ->{
+                acceder = log.login();
+                if(acceder){
+                    agregarPersona("Bibliotecario");
+                }
+            }
             case 3 -> System.out.println("Regresando al inicio.");
             default -> System.out.println("Ingrese una opcion correcta.");
         }
@@ -67,11 +74,19 @@ public class UsuariosServicio {
     // =====================| MENU USUARIOS |=========================
     /// La siguiente función se explica en: {@link #menuBibliotecarios()}
     public void menuUsuarios() {
+        boolean acceder;
         int opcion = mensajeMenu("Usuarios");
         sc.nextLine();
         switch (opcion) {
             case 1 -> buscarPersona("Usuario");
-            case 2 -> agregarPersona("Usuario");
+            case 2 -> {
+                acceder = log.login();
+                if(acceder) {
+                    agregarPersona("Usuario");
+                }else{
+                    System.out.println("Para acceder a esta sección, necesitas ingresar datos correctos.");
+                }
+            }
             case 3 -> System.out.println("Regresando al inicio.");
             default -> System.out.println("Ingrese una opcion correcta.");
         }
@@ -92,7 +107,7 @@ public class UsuariosServicio {
      */
     public void buscarPersona(String area) {
         try {
-            Persona persona = null;
+            Persona persona;
             System.out.print("\nIngrese el ID del " + area + ": ");
             String ID = sc.nextLine();
             //Este if es para validar que el ID que ingresa es con respecto al areá que selecciono,
@@ -146,7 +161,7 @@ public class UsuariosServicio {
             String clave = "";
             String prefijo = area.toUpperCase().substring(0, 3);
             String prestamo = (area.equals("Bibliotecario")) ? "no admite" : "Sin prestamos";
-            String ID = "";
+            String ID;
 
             System.out.print("Nombres: ");
             String nombre = sc.nextLine().trim();

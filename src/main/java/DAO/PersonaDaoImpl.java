@@ -3,6 +3,7 @@ package DAO;
 import Entidades.Usuarios.Bibliotecario;
 import Entidades.Usuarios.Persona;
 import Entidades.Usuarios.Usuario;
+import Entidades.Usuarios.UsuarioDTO;
 import Exceptions.UsuarioNoEncontrado;
 import Interfaces.PersonaDAO;
 
@@ -75,11 +76,17 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
                 String nombre = rs.getString("nombres");
                 String apellidos = rs.getString("apellidos");
                 String correo = rs.getString("correo");
+                String prestamoID = rs.getString("prestamoID");
                 //Filtramos según el rol con respecto a su objeto.
                 switch(rol){
                     //Creacion del objeto persona para obtener los datos de este.
                     case "Bibliotecario" -> persona = new Bibliotecario(personaID, nombre, apellidos, correo);
-                    case "Usuario" -> persona = new Usuario(personaID, nombre, apellidos, correo);
+                    case "Usuario" -> {
+                        persona = new Usuario(personaID, nombre, apellidos, correo);
+                        Usuario usu = (Usuario) persona;
+                        //Si o si se guardara el ID del prestamo.
+                        usu.setLibroPrestado(prestamoID);
+                    }
                     default -> throw new UsuarioNoEncontrado("No se encontro el usuario");
                 }
             }else{
@@ -104,8 +111,8 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
     }
 
     /**
-     * Esta funcion sirve para buscar algun correo con una similitud exacta.
-      * @param correo : Valor con el cual se realizara la busqueda.
+     * Esta función sirve para buscar algún correo con una similitud exacta.
+      * @param correo : Valor con el cual se realizara la búsqueda.
      * @return : Regresará un valor del tipo boolean en donde si encuentra un valor exacto regresará un {@code true},
      *  y si no encuentra entonces un false.
      */
@@ -164,5 +171,31 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
 
         return ID;
     }
+
+
+    @Override
+    public UsuarioDTO validarCredenciales(String correoIn){
+        UsuarioDTO usuario = null;
+        try{
+            this.conectarse();
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+            ps = this.conectar.prepareStatement("SELECT correo, clave, rol FROM biblioteca_mix.usuarios WHERE correo = ? ;");
+            ps.setString(1, correoIn);
+            rs = ps.executeQuery();
+            if(rs.next()){
+                String correoBd = rs.getString("correo");
+                String clave = rs.getString("clave");
+                String rol = rs.getString("rol");
+                usuario = new UsuarioDTO(correoBd, clave, rol);
+            }else{
+                System.out.println("No se encontró el usuario");
+            }
+        }catch(Exception e){
+            System.out.println("Error del tipo(validarCredenciales): " + e.getMessage());
+        }
+        return usuario;
+    }
+
 
 }
