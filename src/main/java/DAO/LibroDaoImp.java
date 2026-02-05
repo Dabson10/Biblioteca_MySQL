@@ -8,7 +8,8 @@ import java.sql.ResultSet;
 
 public class LibroDaoImp extends Conexion implements LibroDAO {
     @Override
-    public void setLibro(String ISBN, String titulo, String categoria, String autor, String prefijo_ejemplar) {
+    public boolean setLibro(String ISBN, String titulo, String categoria, String autor, String prefijo_ejemplar) {
+        boolean guardado = false;
         try{
             PreparedStatement ps;
             ResultSet rs ;
@@ -23,12 +24,16 @@ public class LibroDaoImp extends Conexion implements LibroDAO {
             if(agregado > 0 ){
                 //Si es mayor a cero entonces se guardó correctamente el Libro
                 System.out.println("Se guardaron los datos correctamente.");
+                guardado = true;
             }else{
                 System.out.println("No se guardaron los datos.");
             }
         }catch(Exception e){
             System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
         }
+        return guardado;
     }
 
     @Override
@@ -57,6 +62,8 @@ public class LibroDaoImp extends Conexion implements LibroDAO {
             }
         }catch(Exception e){
             System.out.println("Error del tipo(validarISBN): " + e.getMessage() );
+        }finally {
+            this.cerrarConexion();
         }
         return existe;
     }

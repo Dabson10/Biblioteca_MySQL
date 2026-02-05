@@ -28,7 +28,7 @@ CREATE TABLE biblioteca_mix.ejemplar
     codigo_libro    varchar(15)             NOT NULL,
     ubicacion       VARCHAR(30)             NOT NULL,
     tipo            VARCHAR(20)             NOT NULL,
-    disponible      boolean DEFAULT TRUE,
+    disponible      boolean DEFAULT TRUE    NOT NULL,
     -- Llaves foraneas
     FOREIGN KEY (codigo_libro) REFERENCES biblioteca_mix.libros (ISBN)
 );

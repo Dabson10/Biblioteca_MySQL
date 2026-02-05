@@ -4,6 +4,7 @@ import DAO.Conexion;
 import DAO.PersonaDaoImpl;
 import Entidades.Usuarios.Bibliotecario;
 import Entidades.Usuarios.Persona;
+import Servicios.LibrosServicios;
 import Servicios.UsuariosServicio;
 
 import java.util.InputMismatchException;
@@ -13,14 +14,11 @@ public class Main {
 
     Scanner sc = new Scanner(System.in);
     UsuariosServicio servicioUsu = new UsuariosServicio();
+    LibrosServicios serviciosLibros = new LibrosServicios();
 
     public static void main(String[] args) {
         boolean acceso = true;
 
-
-//        Persona ps= new Bibliotecario("USUA_0002","Kevin", "Almaraz", "tadeo@gmail.com", "perro");
-//        PersonaDaoImpl insert = new PersonaDaoImpl();
-//        insert.agregarPersona(ps, "perro", "Bibliotecario");
         Main principal = new Main();
             while(acceso){
                 acceso = principal.menuPrincipal();
@@ -32,7 +30,7 @@ public class Main {
 
     public boolean menuPrincipal(){
         boolean salida = true;
-        int opcion = 0;
+        int opcion;
         try{
 
             System.out.print("""
@@ -47,7 +45,7 @@ public class Main {
 
             switch(opcion){
                 case 1 -> servicioUsu.menuPersonas();
-                case 2 ->{}
+                case 2 -> serviciosLibros.menuLibroEjemplar();
                 case 3 ->{}
                 case 4 ->{
                     System.out.println("Hasta luego.");
