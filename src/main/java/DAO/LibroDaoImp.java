@@ -3,8 +3,11 @@ package DAO;
 import Entidades.Libro;
 import Interfaces.LibroDAO;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LibroDaoImp extends Conexion implements LibroDAO {
     @Override
@@ -37,8 +40,59 @@ public class LibroDaoImp extends Conexion implements LibroDAO {
     }
 
     @Override
-    public Libro obtenerLibro() {
-        return null;
+    public Libro obtenerLibro(String ISBN) {
+        Libro libro = null;
+        try{
+            PreparedStatement ps;
+            ResultSet rs;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("SELECT * FROM biblioteca_mix.libros WHERE ISBN = ?;");
+            ps.setString(1, ISBN);
+            rs = ps.executeQuery();
+            if(rs.next()){
+                String titulo = rs.getString("titulo");
+                String autorL =rs.getString("autor");
+                String categoria = rs.getString("categoria");
+                String prefijo = rs.getString("prefijo_ejemplar");
+                libro = new Libro(ISBN, titulo, autorL, categoria, prefijo);
+            }
+        }catch(Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return libro;
+    }
+
+    @Override
+    public List<Libro> listarPorAutor(String autor){
+        List<Libro> libros = new ArrayList<>();
+        Libro libro = null;
+        try{
+            this.conectarse();
+            PreparedStatement ps;
+            ResultSet rs;
+
+            ps = this.conectar.prepareStatement("SELECT * FROM libros WHERE LOWER(autor) LIKE ?;");
+            ps.setString(1, (autor.toLowerCase() + "%"));
+            rs = ps.executeQuery();
+            //Si se guardaron
+            while(rs.next()){
+                String ISBN = rs.getString("ISBN");
+                String titulo = rs.getString("titulo");
+                String autorL =rs.getString("autor");
+                String categoria = rs.getString("categoria");
+                String prefijo = rs.getString("prefijo_ejemplar");
+
+                //Si encontró al menos un resultado entonces recorrerá el bucle
+                libros.add(new Libro(ISBN, titulo,autorL, categoria, prefijo));
+            }
+        }catch(Exception e){
+            System.out.println("Error del tipo(listarPorAutor): " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return libros;
     }
 
     @Override

@@ -2,11 +2,15 @@ package Servicios;
 
 import DAO.EjemplarDaoImpl;
 import DAO.LibroDaoImp;
+import Entidades.EjemplarDAO;
+import Entidades.Libro;
 import Interfaces.EjemplarDao;
 import Interfaces.LibroDAO;
 import Utilidades.GenerarID;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 /// En esta sección estarán las diferentes funcionalidades de Libros y Ejemplares.
@@ -17,7 +21,7 @@ public class LibrosServicios {
     GenerarID generarID = new GenerarID();
     public void menuLibroEjemplar(){
         try{
-            System.out.println("""
+            System.out.print("""
                 \nBienvenido a la sección Libros y Ejemplares.
                 ¿Qué acción deseas realizar?
                 1.Acceder a Libros.
@@ -42,9 +46,9 @@ public class LibrosServicios {
         sc.nextLine();
         switch(opcion){
             //Opción mostrar Libros
-            case 1 ->{}
+            case 1 -> obtenerLibro();
             //Opción agregar Libros
-            case 2 -> agregarLibros();
+            case 2 -> bucleLibros();
             case 3 -> System.out.println("Regresando al menu inicial.");
             default -> System.out.println("Ingrese una opción correcta");
         }
@@ -58,7 +62,7 @@ public class LibrosServicios {
             //Opción mostrar Ejemplares
             case 1 ->{}
             //Opción agregar Ejemplares
-            case 2 ->{}
+            case 2 ->agregarMasEjemplares();
             case 3 -> System.out.println("Regresando al menu inicial.");
             default -> System.out.println("Ingrese una opción correcta");
         }
@@ -66,7 +70,57 @@ public class LibrosServicios {
 
     //======================|  MOSTRAR LIBROS. |===========================
     public void obtenerLibro(){
+        try{
+            System.out.println("\n==== Mostrar Libros. ====");
+            System.out.print("""
+                Como deseas buscar los libros.
+                1.Listar por autor.
+                2.Buscar por ISBN.
+                3.Regresar al inicio.
+                Ingrese su opción:\s""");
+            int opcion = sc.nextInt();
+            sc.nextLine();
+            switch(opcion){
+                case 1 -> buscarAutor();
+                case 2 -> buscarISBN();
+                case 3 -> System.out.println("Regresando al menu inicial.");
+                default -> System.out.println("Ingrese una opción correcta.");
+            }
+        }catch (InputMismatchException tipo){
+            System.out.println("Ingrese datos correctos.");
+        }
+    }
 
+    public void buscarAutor(){
+        List<Libro> listaLibro = new ArrayList<>();
+        System.out.print("Nombre del autor: ");
+        String autor = sc.nextLine();
+
+        listaLibro = consultaLibros.listarPorAutor(autor);
+
+        if(listaLibro.isEmpty()){
+            //Si la lista esta vacia entonces regresamos y mostramos una alerta.
+            System.out.println("El autor " + autor + " no tiene libros guardados." );
+        }else{
+            listaLibro.forEach(libro -> {
+                System.out.println(libro.mostrarDatos());
+            });
+        }
+
+    }
+
+    public void buscarISBN(){
+        Libro libro = null;
+        System.out.println("Obtener libro por ISBN");
+        System.out.print("ISBN del libro: ");
+        String ISBN = sc.nextLine();
+        libro = consultaLibros.obtenerLibro(ISBN);
+        if(libro != null){
+            //Si libro es diferente a null entonces mostramos los datos del libro.
+            System.out.println(libro.mostrarDatos());
+        }else{
+            System.out.println("No se encontro el libro.\ningrese un ISBN correcto");
+        }
     }
 
     //======================| AGREGAR LIBROS. |===========================
@@ -82,6 +136,7 @@ public class LibrosServicios {
         //La primera validación empieza aquí.
         if(consultaLibros.validarISBN(ISBN)){
             //Si regresa un true entonces existe el valor, por lo que no debemos guardarlo.
+            System.out.println("Libro con ISBN existente.");
             return false;
         }
 
@@ -91,9 +146,8 @@ public class LibrosServicios {
         String categoria = sc.nextLine().trim();
         System.out.print("Año de salida: ");
         String year = sc.nextLine().trim();
-        System.out.println(year.length());
         if(year.length() < 4 ){
-            System.out.println("Ingrese una año como: (2020) con 4 dígitos.");
+            System.out.println("Ingrese una año como: (2020) con 4 dígitos");
             return false;
         }
         System.out.print("Autor: ");
@@ -104,21 +158,26 @@ public class LibrosServicios {
         //Ahora guardamos los valores en la base de datos, sabiendo que no hay ISBN repetidos.
         boolean agregado = consultaLibros.setLibro(ISBN, titulo, categoria, autor, prefijo);
         if(agregado){
-            //Si se agrego el libro entonces procedemos con la función de cantidad de ejemplares.
-            agregarEjemplares(prefijo, ISBN);
+            //Si se agregó el libro entonces procedemos con la función de cantidad de ejemplares.
+            int cantidad = agregarEjemplares(prefijo, ISBN);
+            if(cantidad > 0){
+                //Si la cantidad es mayor a cero entonces se guardó al menos 1.
+                acceso = true;
+            }
         }
         return acceso;
     }
 
     //======================| AGREGAR EJEMPLARES. |===========================
-    public void agregarEjemplares(String prefijo, String ISBN){
+    //Agregar ejemplares cuando se crea un nuevo Libro.
+    public int agregarEjemplares(String prefijo, String ISBN){
         boolean agregado = false;
         int contador = 0;
         try{
             System.out.print("Ingresa la ubicación del libro: ");
-            String ubicacion = sc.nextLine();
+            String ubicacion = sc.nextLine().trim();
             System.out.print("Tipo de libro(Virtual o físico): ");
-            String tipo = sc.nextLine();
+            String tipo = sc.nextLine().trim();
             System.out.print("Cantidad de ejemplares a guardar: ");
             int cantidad = sc.nextInt();
             for(int i = 0; i < cantidad; i++){
@@ -137,8 +196,23 @@ public class LibrosServicios {
         }catch (InputMismatchException tipo){
             System.out.println("Ingrese correctamente los datos que le piden.");
         }
+        return contador;
     }
 
+    //Agrega ejemplares a ya los existentes.
+    public void agregarMasEjemplares(){
+        EjemplarDAO ejemplar = null;
+        System.out.print("Ingrese el prefijo del ejemplar: ");
+        String prefijo = sc.nextLine();
+        ejemplar = consultaEjemplar.ultimoEjemplar(prefijo);
+        if(ejemplar != null){
+            //Si ejemplar es diferente a null entonces mostramos los datos y le decimos al usaurio si realmente quiere agregar mas ejemplares.
+            System.out.println(ejemplar.mostrarDatos());
+        }else{
+            System.out.println("No se encontro el ejemplar con el ISBN ingresado.");
+            return;
+        }
+    }
 
     //======================| MENSAJE GENÉRICO LIBROS Y EJEMPLARES. |===========================
     public int mensajeMenu(String area){
@@ -158,7 +232,9 @@ public class LibrosServicios {
         return opcion;
     }
 
-    //======================| BUCLES PARA AGREGAR LIBROS. |===========================
+    //======================| BUCLES PARA AGREGAR Y MOSTRAR LIBROS Y EJEMPLARES. |===========================
+    public void bucleMostrarISBN(){
+    }
     public void bucleLibros(){
         boolean continuar = false;
         for(int i = 0; i < 3; i++){

@@ -6,7 +6,7 @@ public class Libro {
     private String autor;
     private String categoria;
     private String prefijoEjemplar;
-    //PrefijoEjemplar servira pra guardar el prefijo que tendras los ejemplares relacionados al libro.
+    //PrefijoEjemplar servira pra guardar el prefijo que tendrás los ejemplares relacionados al libro.
 
     public Libro(String ISBN, String titulo, String autor, String categoria, String prefijoEjemplar){
         this.ISBN = ISBN;
@@ -17,11 +17,11 @@ public class Libro {
     }
 
     public String mostrarDatos(){
-        return "Titulo: " + titulo +
-                "Autor: " + autor +
-                "Categoria: " + categoria +
-                "ISBN: " + ISBN +
-                "Prefijo: " + prefijoEjemplar;
+        return "\nTitulo: " + titulo +
+                "\nAutor: " + autor +
+                "\nCategoria: " + categoria +
+                "\nISBN: " + ISBN +
+                "\nPrefijo: " + prefijoEjemplar;
     }
 
 }
