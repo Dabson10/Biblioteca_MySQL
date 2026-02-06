@@ -20,7 +20,7 @@ public class Login {
      * ingresar su nombre.
      *
      * @return : Regresará un valor booleano este servirá para direccionar la funcionalidad con respecto al valor,
-     *          si es un true entonces procede con agregar, etc, datos.
+     *          si es un true entonces procede con agregar, etc., datos.
      */
     public boolean login(){
         boolean validar = false;
@@ -56,7 +56,6 @@ public class Login {
     public boolean datos(){
         boolean validar = false;
             try{
-                //Agrega el null por si te sale error jeje
                 UsuarioDTO usuario ;
                 System.out.println("\nIngresa correo electrónico y contraseña para poder entrar.");
 

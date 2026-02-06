@@ -17,10 +17,18 @@ public class Ejemplar {
         }
     }
 
+    public void setDisponible(boolean disponible){
+        this.disponible = disponible;
+    }
+
+    public Libro getLibroInfo(){
+        return libroInfo;
+    }
+
 
     public String mostrarDatos(){
         String dispo = (disponible) ? "Disponible" : "Prestado" ;
-        return "Libro: " + libroInfo.mostrarDatos() +
+        return libroInfo.mostrarDatos() +
                 "\nUbicación: " + ubicacion +
                 "\nTipo: " + tipo +
                 "\nCodigo ejemplar: " + codigoEjemplar +

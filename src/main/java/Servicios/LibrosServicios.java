@@ -2,13 +2,13 @@ package Servicios;
 
 import DAO.EjemplarDaoImpl;
 import DAO.LibroDaoImp;
+import Entidades.Ejemplar;
 import Entidades.EjemplarDAO;
 import Entidades.Libro;
 import Interfaces.EjemplarDao;
 import Interfaces.LibroDAO;
 import Utilidades.GenerarID;
 
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -60,7 +60,7 @@ public class LibrosServicios {
         sc.nextLine();
         switch(opcion){
             //Opción mostrar Ejemplares
-            case 1 ->{}
+            case 1 -> mostrarEjemplares();
             //Opción agregar Ejemplares
             case 2 ->agregarMasEjemplares();
             case 3 -> System.out.println("Regresando al menu inicial.");
@@ -92,7 +92,7 @@ public class LibrosServicios {
     }
 
     public void buscarAutor(){
-        List<Libro> listaLibro = new ArrayList<>();
+        List<Libro> listaLibro;
         System.out.print("Nombre del autor: ");
         String autor = sc.nextLine();
 
@@ -171,7 +171,7 @@ public class LibrosServicios {
     //======================| AGREGAR EJEMPLARES. |===========================
     //Agregar ejemplares cuando se crea un nuevo Libro.
     public int agregarEjemplares(String prefijo, String ISBN){
-        boolean agregado = false;
+        boolean agregado;
         int contador = 0;
         try{
             System.out.print("Ingresa la ubicación del libro: ");
@@ -201,19 +201,65 @@ public class LibrosServicios {
 
     //Agrega ejemplares a ya los existentes.
     public void agregarMasEjemplares(){
-        EjemplarDAO ejemplar = null;
-        System.out.print("Ingrese el prefijo del ejemplar: ");
-        String prefijo = sc.nextLine();
-        ejemplar = consultaEjemplar.ultimoEjemplar(prefijo);
-        if(ejemplar != null){
-            //Si ejemplar es diferente a null entonces mostramos los datos y le decimos al usaurio si realmente quiere agregar mas ejemplares.
-            System.out.println(ejemplar.mostrarDatos());
-        }else{
-            System.out.println("No se encontro el ejemplar con el ISBN ingresado.");
-            return;
+        try{
+            EjemplarDAO ejemplar;
+            System.out.print("\nIngrese el prefijo del ejemplar: ");
+            String prefijo = sc.nextLine();
+            ejemplar = consultaEjemplar.ultimoEjemplar(prefijo);
+            if(ejemplar != null){
+                //Si ejemplar es diferente a null entonces mostramos los datos y le decimos al usuario si realmente quiere agregar mas ejemplares.
+                System.out.println(ejemplar.mostrarDatos());
+            }else{
+                System.out.println("No se encontro el ejemplar con el ISBN ingresado.");
+                return;
+            }
+            System.out.println("""
+                ¿Deseas agregar mas ejemplares de este libro?
+                1.Agregar mas.
+                2.Regresar al inicio.
+                Ingrese su opción:\s""");
+            int opc = sc.nextInt();
+            if(opc == 1){
+                datosEjemplar(prefijo);
+            }else{
+                System.out.println("Regresando al menu inicial.");
+            }
+        }catch(InputMismatchException tipos){
+            System.out.println("Ingrese correctamente los datos que le solicitan.");
         }
     }
 
+    public void datosEjemplar(String prefijo){
+        Ejemplar ejemplar;
+        String ultimo = consultaEjemplar.ultimoID(prefijo);
+        //Ahora teniendo el ID con el último número toca obtener ese número.
+        int inicio = ultimo.lastIndexOf("_");
+        int longitud = ultimo.length();
+        //Obtenemos el último número de los ejemplares.
+        int numero = Integer.parseInt(ultimo.substring((inicio + 1), longitud));
+        System.out.println("El numero completo es: " + ultimo.substring((inicio + 1), longitud) + ", resumido es: " + numero );
+        //Ahora teniendo ya el número toca
+        String ID = generarID.generarID(prefijo, (numero + 1));
+        //Ahora toca realizar el bucle para guardar los datos.
+
+    }
+
+    //======================| MOSTRAR EJEMPLARES. |===========================
+    public void mostrarEjemplares(){
+        Ejemplar ejemplar;
+        System.out.println("Buscar ejemplar por ID.");
+        System.out.print("Ingrese el ID: ");
+        String ID = sc.nextLine();
+
+        //Ahora realizamos la consulta
+        ejemplar = consultaEjemplar.obtenerEjemplar(ID);
+        if(ejemplar != null){
+            //Si no se recibieron valores null entonces mostramos datos.
+            System.out.println(ejemplar.mostrarDatos());
+        }else{
+            System.out.println("No se encontro el ejemplar ingresado.");
+        }
+    }
     //======================| MENSAJE GENÉRICO LIBROS Y EJEMPLARES. |===========================
     public int mensajeMenu(String area){
         int opcion = 0;

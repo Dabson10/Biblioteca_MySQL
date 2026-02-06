@@ -20,9 +20,17 @@ public class Main {
         boolean acceso = true;
 
         Main principal = new Main();
-            while(acceso){
-                acceso = principal.menuPrincipal();
-            }
+
+//        String cadena = "FISULO08_0001";
+//        int posicion = cadena.lastIndexOf("_");
+//        int longitud = cadena.length();
+//        System.out.println(cadena.substring((posicion + 1), (longitud )));
+//        System.out.println(posicion);
+
+
+        while (acceso) {
+            acceso = principal.menuPrincipal();
+        }
 
     }
 

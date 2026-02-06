@@ -16,6 +16,10 @@ public class Libro {
         this.prefijoEjemplar = prefijoEjemplar;
     }
 
+    public String getPrefijoEjemplar(){
+        return prefijoEjemplar;
+    }
+
     public String mostrarDatos(){
         return "\nTitulo: " + titulo +
                 "\nAutor: " + autor +

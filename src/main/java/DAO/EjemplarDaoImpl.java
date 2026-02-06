@@ -1,12 +1,16 @@
 package DAO;
 
+import Entidades.Ejemplar;
 import Entidades.EjemplarDAO;
+import Entidades.Libro;
 import Interfaces.EjemplarDao;
+import Interfaces.LibroDAO;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class EjemplarDaoImpl extends Conexion implements EjemplarDao {
+    LibroDAO consultaLibro = new LibroDaoImp();
 
     @Override
     public boolean setEjemplar(String codigoEjemplar, String ISBN, String ubicacion, String tipo) {
@@ -59,7 +63,62 @@ public class EjemplarDaoImpl extends Conexion implements EjemplarDao {
             }
         }catch (Exception e){
             System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
         }
         return ejemplar;
     }
+
+    @Override
+    public Ejemplar obtenerEjemplar(String ID){
+        Ejemplar ejemplar = null;
+        Libro libro;
+        try{
+            PreparedStatement ps;
+            ResultSet rs;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("SELECT * FROM biblioteca_mix.ejemplar WHERE codigo_ejemplar = ?;");
+            ps.setString(1, ID);
+            rs = ps.executeQuery();
+            if(rs.next()) {
+                String ISBN = rs.getString("codigo_libro");
+                String ubicacion = rs.getString("ubicacion");
+                String tipo = rs.getString("tipo");
+                boolean disp = rs.getBoolean("disponible");
+                //Para poder guardar el objeto Ejemplar es necesario tener un objeto tipo Libro
+                libro = consultaLibro.obtenerLibro(ISBN);
+                if(libro != null){
+                    //Si el valor es diferente entonces realizamos el guardado de datos.
+                    ejemplar = new Ejemplar(ID, libro, ubicacion, tipo);
+                    ejemplar.setDisponible(disp);
+                }
+
+            }
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return ejemplar;
+    }
+
+    @Override
+    public String ultimoID(String prefijo){
+        String ultimoID = "";
+        try{
+            PreparedStatement ps;
+            ResultSet rs;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("SELECT MAX(codigo_ejemplar) AS ultimoID FROM biblioteca_mix.ejemplar WHERE codigo_ejemplar LIKE ?;");
+            ps.setString(1, (prefijo + "%"));
+            rs = ps.executeQuery();
+            if(rs.next()){
+                ultimoID = rs.getString("ultimoID");
+            }
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }
+        return ultimoID;
+    }
+
 }
