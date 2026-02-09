@@ -52,14 +52,17 @@ public class EjemplarDaoImpl extends Conexion implements EjemplarDao {
             PreparedStatement ps;
             ResultSet rs;
             this.conectarse();
-            ps = this.conectar.prepareStatement("SELECT codigo_ejemplar, codigo_libro, disponible FROM biblioteca_mix.ejemplar WHERE codigo_ejemplar LIKE ? ORDER BY codigo_ejemplar DESC LIMIT 1;");
+            ps = this.conectar.prepareStatement("SELECT codigo_ejemplar, codigo_libro, disponible, tipo, ubicacion FROM biblioteca_mix.ejemplar WHERE codigo_ejemplar LIKE ? ORDER BY codigo_ejemplar DESC LIMIT 1;");
             ps.setString(1, (prefijo + "%"));
             rs = ps.executeQuery();
             if(rs.next()){
                   ultimoID = rs.getString("codigo_ejemplar");
                   String ISBN = rs.getString("codigo_libro");
+                  String ubicacion = rs.getString("ubicacion");
+                  String tipo = rs.getString("tipo");
                   boolean disponible = rs.getBoolean("disponible");
-                  ejemplar = new EjemplarDAO(ultimoID, ISBN, disponible);
+
+                  ejemplar = new EjemplarDAO(ultimoID, ISBN, disponible, ubicacion, tipo);
             }
         }catch (Exception e){
             System.out.println("Error del tipo: " + e.getMessage());
@@ -103,22 +106,94 @@ public class EjemplarDaoImpl extends Conexion implements EjemplarDao {
     }
 
     @Override
-    public String ultimoID(String prefijo){
-        String ultimoID = "";
+    public boolean existeEjemplar(String ID){
+        boolean existe = false;
         try{
             PreparedStatement ps;
             ResultSet rs;
             this.conectarse();
-            ps = this.conectar.prepareStatement("SELECT MAX(codigo_ejemplar) AS ultimoID FROM biblioteca_mix.ejemplar WHERE codigo_ejemplar LIKE ?;");
-            ps.setString(1, (prefijo + "%"));
+            ps = this.conectar.prepareStatement("SELECT codigo_ejemplar FROM biblioteca_mix.ejemplar WHERE codigo_ejemplar = ?;");
+            ps.setString(1, ID);
             rs = ps.executeQuery();
+            //Si el usuario existe entonces regresamos un true;
             if(rs.next()){
-                ultimoID = rs.getString("ultimoID");
+                existe = true;
+            }
+            //Si el usuario no existe regresara un false;
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return existe;
+    }
+
+    @Override
+    public boolean editUbicacion(String ubicacion, String ID){
+        boolean editado = false;
+        try{
+            PreparedStatement ps;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.ejemplar SET ubicacion = ? WHERE codigo_ejemplar = ?");
+            ps.setString(1, ubicacion);
+            ps.setString(2, ID);
+            int cambios = ps.executeUpdate();
+            if(cambios > 0){
+                //Si es mayor a cero entonces cambiamos el valor booleano
+                editado = true;
             }
         }catch (Exception e){
             System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
         }
-        return ultimoID;
+        return editado;
+    }
+
+    @Override
+    public boolean editTipo(String tipo, String ID){
+        boolean actualizado = false;
+        try{
+            PreparedStatement ps;
+            this.conectarse();
+            System.out.println("Valores " + tipo + " " + ID);
+            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.ejemplar SET tipo = ? WHERE codigo_ejemplar = ?;");
+            ps.setString(1, tipo);
+            ps.setString(2, ID);
+            int cambio = ps.executeUpdate();
+            //Si se realizó el cambio entonces regresamos un valor booleano.
+            if(cambio > 0){
+                actualizado = true;
+            }
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return actualizado;
+    }
+
+    //La siguiente función se puede borrar.
+    @Override
+    public String obtenerTipo(String ID){
+        String tipo = "";
+        try{
+            PreparedStatement ps;
+            ResultSet rs;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("SELECT tipo FROM biblioteca_mix.ejemplar WHERE codigo_ejemplar = ?;");
+            ps.setString(1, ID);
+
+            rs = ps.executeQuery();
+            if(rs.next()){
+                //Si se realiza la consulta entonces regresamos el tipo de libro
+                tipo = rs.getString("tipo");
+            }
+
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }
+        return tipo;
     }
 
 }

@@ -9,6 +9,7 @@ import Interfaces.EjemplarDao;
 import Interfaces.LibroDAO;
 import Utilidades.GenerarID;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -63,7 +64,9 @@ public class LibrosServicios {
             case 1 -> mostrarEjemplares();
             //Opción agregar Ejemplares
             case 2 ->agregarMasEjemplares();
-            case 3 -> System.out.println("Regresando al menu inicial.");
+            //Opción para editar Ejemplares
+            case 3 -> menuEditar();
+            case 4 -> System.out.println("Regresando al menu inicial.");
             default -> System.out.println("Ingrese una opción correcta");
         }
     }
@@ -206,21 +209,23 @@ public class LibrosServicios {
             System.out.print("\nIngrese el prefijo del ejemplar: ");
             String prefijo = sc.nextLine();
             ejemplar = consultaEjemplar.ultimoEjemplar(prefijo);
+
             if(ejemplar != null){
+                System.out.println("El ultimo ID es: " + ejemplar.getID());
                 //Si ejemplar es diferente a null entonces mostramos los datos y le decimos al usuario si realmente quiere agregar mas ejemplares.
                 System.out.println(ejemplar.mostrarDatos());
             }else{
                 System.out.println("No se encontro el ejemplar con el ISBN ingresado.");
                 return;
             }
-            System.out.println("""
-                ¿Deseas agregar mas ejemplares de este libro?
+            System.out.print("""
+                \n¿Deseas agregar mas ejemplares de este libro?
                 1.Agregar mas.
                 2.Regresar al inicio.
                 Ingrese su opción:\s""");
             int opc = sc.nextInt();
             if(opc == 1){
-                datosEjemplar(prefijo);
+                datosEjemplar(ejemplar, prefijo);
             }else{
                 System.out.println("Regresando al menu inicial.");
             }
@@ -229,19 +234,157 @@ public class LibrosServicios {
         }
     }
 
-    public void datosEjemplar(String prefijo){
-        Ejemplar ejemplar;
-        String ultimo = consultaEjemplar.ultimoID(prefijo);
+    public void datosEjemplar(EjemplarDAO ejemplar, String prefijo){
+
+        String ultimo = ejemplar.getID();
         //Ahora teniendo el ID con el último número toca obtener ese número.
         int inicio = ultimo.lastIndexOf("_");
         int longitud = ultimo.length();
         //Obtenemos el último número de los ejemplares.
         int numero = Integer.parseInt(ultimo.substring((inicio + 1), longitud));
-        System.out.println("El numero completo es: " + ultimo.substring((inicio + 1), longitud) + ", resumido es: " + numero );
-        //Ahora teniendo ya el número toca
-        String ID = generarID.generarID(prefijo, (numero + 1));
+        //Ahora teniendo ya el ultimo numero realizamos el bucle, creando ais un nuevo ID
+        String ID = (generarID.generarID(prefijo, (numero + 1))).toUpperCase();
         //Ahora toca realizar el bucle para guardar los datos.
+        bucleAgregarMas(ejemplar, numero, prefijo);
+    }
 
+    public void bucleAgregarMas(EjemplarDAO ejemplar, int numero, String prefijo){
+        try{
+            String ISBN = ejemplar.getISBN();
+            String ubicacion = ejemplar.getUbicacion();
+            String tipo = ejemplar.getTipo();
+            boolean guardado;
+            int contador = 0;
+            System.out.print("Ingrese la cantidad de ejemplares: ");
+            int cantidad = sc.nextInt();
+            for(int i = 1; i <= cantidad; i++){
+                String ID = (generarID.generarID(prefijo, (numero + i))).toUpperCase();
+                guardado = consultaEjemplar.setEjemplar(ID, ISBN, ubicacion, tipo);
+                if(guardado){
+                    contador++;
+                }
+            }
+            System.out.println("Se guardaron " + contador + " de " + cantidad + " ejemplares.");
+        }catch(InputMismatchException tipo){
+            System.out.println("Ingrese los datos que le solicitan");
+        }
+    }
+
+    //======================| EDITAR EJEMPLARES. |===========================
+    //Lo unico que será editado son los datos fundamentales, como ubicacion y tipo
+
+    public void menuEditar(){
+        System.out.print("""
+                ¿Que datos deseas editar?
+                1.Ubicación.
+                2.Tipo.
+                3.Salir
+                Ingrese su opción:\s""");
+        int opcion = sc.nextInt();
+        switch(opcion){
+            case 1 -> editarUbicacion();
+            case 2 -> editarTipo();
+            case 3 -> System.out.println("Regresando al menu inicial.");
+            default -> System.out.println("Ingrese una opción correcta.");
+        }
+
+    }
+    public int mensajeEditar(){
+        int cantidad = 0 ;
+        try{
+            System.out.print("Cuantos ejemplares editara: ");
+            cantidad = sc.nextInt();
+            sc.nextLine();
+        }catch(InputMismatchException tipo ){
+            System.out.println("Ingrese los datos que se le solicitan.");
+        }
+        return cantidad;
+    }
+
+    //Prueba este code;
+    public void editarUbicacion(){
+        List<String> lista = listaEjemplares();
+        boolean actualizado = false;
+        //Si la lista está vacía entonces regresamos con un mensaje simple.
+        if(lista.isEmpty()){
+            System.out.println("La lista no tiene ejemplares a editar.");
+            return;
+        }
+        //Como en esta función se editara la ubicación es necesario que el usuario ingrese la nueva ubicacion.
+        int limite = lista.size();
+        for(int i = 0; i < limite; i++){
+            System.out.print("Ingrese la nueva ubicación del ejemplar " + lista.get(i) + ": ");
+            String nuevaUbi = sc.nextLine();
+            actualizado = consultaEjemplar.editUbicacion(nuevaUbi, lista.get(i));
+            if(actualizado){
+                System.out.println("Se actualizo correctamente el ejemplar: " + lista.get(i));
+            }else{
+                System.out.println("No se actualizo el ejemplar.");
+            }
+        }
+
+    }
+    public void editarTipo(){
+        List<String> lista = listaEjemplares();
+        boolean actualizado = false;
+        //Si la lista está vacía entonces regresamos con un mensaje simple.
+        if(lista.isEmpty()){
+            System.out.println("La lista no tiene ejemplares a editar.");
+            return;
+        }
+        System.out.println("Se cambiara el tipo de libro automáticamente." +
+                "\nSi es físico cambiara a Digital y viceversa.");
+        int limite = lista.size();
+        for(int i = 0; i < limite; i++){
+            String tipoLibroBD = consultaEjemplar.obtenerTipo(lista.get(i));
+            System.out.println("El ejemplar es: " + tipoLibroBD);
+            String tipoNuevo = (tipoLibroBD.equals("Físico")) ? "Digital" : "Físico" ;
+            actualizado = consultaEjemplar.editTipo(lista.get(i), tipoNuevo);
+            if(actualizado){
+                //Si me regresa un atualizado entonces regresamos el mensaje de alerta.
+                System.out.println("Se actualizo correctamente el ejemplar: " + lista.get(i) + " ahora es: " + tipoNuevo);
+            }else{
+                System.out.println("No se actualizo el ejemplar.");
+            }
+            //Realizamos la consulta
+
+        }
+
+    }
+
+    public List<String> listaEjemplares(){
+        int cantidad = mensajeEditar();
+        boolean existe = false;
+        int contador = 0;
+        List<String > listEjemplares = new ArrayList<>();
+        if(cantidad == 0){
+            System.out.println("\nIngrese una cantidad valida de ejemplares.");
+            return listEjemplares;
+        }
+        for(int i = 0; i < cantidad; i++){
+            System.out.print("Ingrese el ID del libro: ");
+            String ID = sc.nextLine().trim().toUpperCase();
+            existe = consultaEjemplar.existeEjemplar(ID);
+            //Al realizar la consulta regresará un valor booleano en el cual sabremos si validaremos su existencia en la lista.
+            if(existe){
+                System.out.println("Libro existente");
+                //Este if busca en la lista si existe alguna coincidencia mediante el valor del ID.
+                if(!listEjemplares.contains(ID)){
+                    System.out.println("Se guardara el ejemplar " + ID);
+                    //Si la lista no tiene ninguna coincidencia entonces agregamos el valor
+                    listEjemplares.add(ID);
+                    contador++;
+                }else{
+                    System.out.println("El ejemplar " + ID + " se guardo para editar.");
+                }
+            }else{
+                System.out.println("El ejemplar con el ID " + ID + " no existe.");
+            }
+        }
+        System.out.println("Se editaran " + contador + " de " + cantidad + " ejemplares solicitados.");
+        System.out.println("Los libros agregados son: ");
+        listEjemplares.forEach(System.out::println);
+        return listEjemplares;
     }
 
     //======================| MOSTRAR EJEMPLARES. |===========================
@@ -263,14 +406,17 @@ public class LibrosServicios {
     //======================| MENSAJE GENÉRICO LIBROS Y EJEMPLARES. |===========================
     public int mensajeMenu(String area){
         int opcion = 0;
+        int numero = (area.equals("Ejemplares"))? 4 : 3;
         try{
             System.out.println("\nBienvenido a la sección " + area);
             System.out.println("¿Que deseas realizar?");
             System.out.println("1.Buscar " + area);
             System.out.println("2.Agregar " + area);
-            System.out.print("""
-                    3.Regresar al inicio.
-                    Ingresa tu opción:\s""");
+            //Si es igual a ejemplares entonces podrá editarse datos fundamentales menos disponibilidad.
+
+            if(area.equals("Ejemplares")){System.out.println("3.Editar " + area);}
+            System.out.println( numero + ".Regresar al inicio");
+            System.out.print("Ingresa tu opción: ");
             opcion = sc.nextInt();
         }catch(InputMismatchException tipo){
             System.out.println("Ingrese los datos que se le solicitan.");
