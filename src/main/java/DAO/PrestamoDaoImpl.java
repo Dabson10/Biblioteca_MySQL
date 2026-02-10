@@ -2,6 +2,7 @@ package DAO;
 
 import Interfaces.PrestamoDAO;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
@@ -18,8 +19,8 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
             ps.setString(1, prestamoID);
             ps.setString( 2,ejemplarID);
             ps.setString(3,usuarioID);
-            ps.setString(4, String.valueOf(fecha_prestamo));
-            ps.setString( 5,String.valueOf(fecha_entrega));
+            ps.setDate(4, Date.valueOf(fecha_prestamo));
+            ps.setDate( 5, Date.valueOf(fecha_entrega));
             int agregado = ps.executeUpdate();
             if(agregado > 0 ){
                 //Si se agregó el valor entonces regresaremos un valor true;
@@ -28,6 +29,8 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
 
         }catch (Exception e){
             System.out.println("Error del tipo: " + e.getMessage());
+//            System.out.println("Error del tipo: " + e.getLocalizedMessage());
+            e.printStackTrace();
         }finally {
             this.cerrarConexion();
         }

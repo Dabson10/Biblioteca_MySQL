@@ -214,7 +214,6 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
         return ID;
     }
 
-
     @Override
     public UsuarioDTO validarCredenciales(String correoIn){
         UsuarioDTO usuario = null;
@@ -237,6 +236,27 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
             System.out.println("Error del tipo(validarCredenciales): " + e.getMessage());
         }
         return usuario;
+    }
+
+    @Override
+    public boolean prestarEjemplar(String personaID, String ejemplarID) {
+        boolean actualizado = false;
+        try{
+            PreparedStatement ps;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.usuarios SET prestamoID = ? WHERE personaID = ?;");
+            ps.setString(1, ejemplarID);
+            ps.setString(1, personaID);
+            int cambio = ps.executeUpdate();
+            if(cambio > 0 ){
+                actualizado = true;
+            }
+        }catch (Exception e ){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return actualizado;
     }
 
 

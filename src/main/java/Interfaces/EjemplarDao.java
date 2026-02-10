@@ -11,5 +11,6 @@ public interface EjemplarDao {
     public boolean existeEjemplar(String ID);
     public boolean editUbicacion(String ubicacion, String ID);
     public boolean editTipo(String tipo, String ID);
-
+    public boolean cambiarEstado(String ejemplarID);
+//    public boolean restaurarEstado(String ejemplarID);
 }

@@ -195,4 +195,24 @@ public class EjemplarDaoImpl extends Conexion implements EjemplarDao {
         return tipo;
     }
 
+    @Override
+    public boolean cambiarEstado(String ejemplarID) {
+        boolean actualizado = false;
+        try{
+            PreparedStatement ps;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.ejemplar SET disponible = CASE WHEN disponible = true THEN false ELSE true END WHERE codigo_ejemplar = ?;");
+            ps.setString(1, ejemplarID);
+            int cambios = ps.executeUpdate();
+            if(cambios > 0){
+                actualizado = true;
+            }
+        }catch (Exception e ){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return actualizado;
+    }
+
 }
