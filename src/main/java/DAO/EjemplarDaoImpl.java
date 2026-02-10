@@ -173,7 +173,6 @@ public class EjemplarDaoImpl extends Conexion implements EjemplarDao {
         return actualizado;
     }
 
-    //La siguiente función se puede borrar.
     @Override
     public String obtenerTipo(String ID){
         String tipo = "";

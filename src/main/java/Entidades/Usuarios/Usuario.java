@@ -25,7 +25,7 @@ public class Usuario extends Persona{
         String prestamo = (libroPrestado.equals("Sin prestamos")) ? libroPrestado : "Con deuda" ;
         return "Usuario\n" +
                 "Nombre: " + getNombres() +
-                "\nApellido" + getApellidos() +
+                "\nApellido: " + getApellidos() +
                 "\nCorreo: " + getCorreo() +
                 "\nID: " + getPersonaID() +
                 "\n" + prestamo;

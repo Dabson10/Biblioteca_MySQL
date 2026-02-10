@@ -339,7 +339,7 @@ public class LibrosServicios {
             String tipoLibroBD = consultaEjemplar.obtenerTipo(lista.get(i));
             System.out.println("El ejemplar es: " + tipoLibroBD);
             String tipoNuevo = (tipoLibroBD.equals("Físico")) ? "Digital" : "Físico" ;
-            actualizado = consultaEjemplar.editTipo(lista.get(i), tipoNuevo);
+            actualizado = consultaEjemplar.editTipo(tipoNuevo, lista.get(i));
             if(actualizado){
                 //Si me regresa un atualizado entonces regresamos el mensaje de alerta.
                 System.out.println("Se actualizo correctamente el ejemplar: " + lista.get(i) + " ahora es: " + tipoNuevo);

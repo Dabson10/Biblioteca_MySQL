@@ -31,8 +31,8 @@ public class Prestamo {
         //Esta variable sirve para saber si se entrego o no el libro.
         String entregado = (realFechaEntrega != null)? realFechaEntrega.toString() : "Aun no se entrega.";
 
-        //extra srive para validar si la entrega fue antes o despues, si al comparar fechas es rapido,
-        //pero es mejor tener una nota de que sucedio con el libro
+        //extra sirve para validar si la entrega fue antes o después, si al comparar fechas es rapido,
+        //pero es mejor tener una nota de que sucedió con el libro
         String extra =(realFechaEntrega.isAfter(fechaEntrega)) ? "Libro entregado a destiempo." : "Entregado a tiempo.";
 
         return "Libro: " + ejemplarPrestado.mostrarDatos() +
@@ -40,7 +40,7 @@ public class Prestamo {
                 "\nSolicitado por: " + solicitadoPor.mostrarDatos() +
                 "\nFecha solicitado: " + fechaPrestamo +
                 "\nFecha limite de entrega: " +
-                "\nSe entrego en la fecha: " + entregado +
+                "\nSe entrego en la fecha: " + entregado + " " +
                 extra;
     }
     

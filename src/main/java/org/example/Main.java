@@ -1,10 +1,8 @@
 package org.example;
 
-import DAO.Conexion;
-import DAO.PersonaDaoImpl;
-import Entidades.Usuarios.Bibliotecario;
-import Entidades.Usuarios.Persona;
+
 import Servicios.LibrosServicios;
+import Servicios.PrestamosServicios;
 import Servicios.UsuariosServicio;
 
 import java.util.InputMismatchException;
@@ -15,18 +13,12 @@ public class Main {
     Scanner sc = new Scanner(System.in);
     UsuariosServicio servicioUsu = new UsuariosServicio();
     LibrosServicios serviciosLibros = new LibrosServicios();
+    PrestamosServicios servicioPrest = new PrestamosServicios();
 
     public static void main(String[] args) {
         boolean acceso = true;
 
         Main principal = new Main();
-
-//        String cadena = "FISULO08_0001";
-//        int posicion = cadena.lastIndexOf("_");
-//        int longitud = cadena.length();
-//        System.out.println(cadena.substring((posicion + 1), (longitud )));
-//        System.out.println(posicion);
-
 
         while (acceso) {
             acceso = principal.menuPrincipal();
@@ -54,7 +46,7 @@ public class Main {
             switch(opcion){
                 case 1 -> servicioUsu.menuPersonas();
                 case 2 -> serviciosLibros.menuLibroEjemplar();
-                case 3 ->{}
+                case 3 -> servicioPrest.menuPrestamo();
                 case 4 ->{
                     System.out.println("Hasta luego.");
                     sc.close();

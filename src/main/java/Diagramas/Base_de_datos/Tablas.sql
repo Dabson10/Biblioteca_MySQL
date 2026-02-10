@@ -10,7 +10,7 @@ CREATE TABLE biblioteca_mix.usuarios
     libro_prestado varchar(15) DEFAULT NULL
 );
 
--- Tabla de Libro, este solo tendra uno por categoria
+-- Tabla de Libro, este solo tendrá uno por categoria
 CREATE TABLE biblioteca_mix.libros
 (
     ISBN             VARCHAR(30) PRIMARY KEY NOT NULL,
@@ -29,10 +29,10 @@ CREATE TABLE biblioteca_mix.ejemplar
     ubicacion       VARCHAR(30)             NOT NULL,
     tipo            VARCHAR(20)             NOT NULL,
     disponible      boolean DEFAULT TRUE    NOT NULL,
-    -- Llaves foraneas
+    -- Llaves foráneas
     FOREIGN KEY (codigo_libro) REFERENCES biblioteca_mix.libros (ISBN)
 );
--- Tabla de prestamos
+-- Tabla de préstamos
 CREATE TABLE biblioteca_mix.prestamo
 (
     prestamo_ID       varchar(15) PRIMARY KEY NOT NULL,
@@ -40,7 +40,8 @@ CREATE TABLE biblioteca_mix.prestamo
     solicitado_por    varchar(15)             NOT NULL,
     fecha_prestamo    DATE                    NOT NULL,
     fecha_entrega     DATE                    NOT NULL,
-    -- Llave foraneas.
+    real_fecha_entrega DATE                   DEFAULT NULL,
+    -- Llave foráneas.
     FOREIGN KEY (ejemplar_prestado) REFERENCES biblioteca_mix.ejemplar (codigo_ejemplar),
     FOREIGN KEY (solicitado_por) REFERENCES biblioteca_mix.usuarios (personaID)
 );

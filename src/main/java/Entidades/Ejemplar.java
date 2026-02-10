@@ -20,10 +20,12 @@ public class Ejemplar {
     public void setDisponible(boolean disponible){
         this.disponible = disponible;
     }
-
+    public boolean getDisponible(){return disponible;}
     public Libro getLibroInfo(){
         return libroInfo;
     }
+    public String getCodigoEjemplar(){return codigoEjemplar;}
+
 
 
     public String mostrarDatos(){

@@ -87,7 +87,7 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
                         //Si o si se guardara el ID del prestamo.
                         usu.setLibroPrestado(prestamoID);
                     }
-                    default -> throw new UsuarioNoEncontrado("No se encontro el usuario");
+                    default -> throw new UsuarioNoEncontrado("No se encontró el usuario");
                 }
             }else{
                 System.out.println("No se encontro al usuario");
@@ -99,6 +99,48 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
         }
         catch(Exception e){
             System.out.println("Error del tipo(Obtener persona): " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return persona;
+    }
+
+    @Override
+    public Persona correoPersona(String correo){
+        Persona persona = null;
+        try{
+            PreparedStatement ps;
+            ResultSet rs;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("SELECT * FROM biblioteca_mix.usuarios WHERE correo = ?;");
+            ps.setString(1, correo);
+            rs = ps.executeQuery();
+            if(rs.next()){
+                //Si lo encontró entonces regresamos los datos del usuario.
+                //Obtenemos los datos del usuario.
+                String rol = rs.getString("rol");
+                String personaID = rs.getString("personaID");
+                String nombre = rs.getString("nombres");
+                String apellidos = rs.getString("apellidos");
+                String correoU = rs.getString("correo");
+                String prestamoID = rs.getString("prestamoID");
+                //Filtramos según el rol con respecto a su objeto.
+                switch(rol){
+                    //Creación del objeto persona para obtener los datos de este.
+                    case "Bibliotecario" -> persona = new Bibliotecario(personaID, nombre, apellidos, correo);
+                    case "Usuario" -> {
+                        persona = new Usuario(personaID, nombre, apellidos, correoU);
+                        Usuario usu = (Usuario) persona;
+                        //Si o si se guardara el ID del prestamo.
+                        usu.setLibroPrestado(prestamoID);
+                    }
+                    default -> throw new UsuarioNoEncontrado("No se encontró el usuario");
+                }
+
+
+            }
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
         }finally {
             this.cerrarConexion();
         }
