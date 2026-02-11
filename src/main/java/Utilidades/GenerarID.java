@@ -28,7 +28,7 @@ public class GenerarID {
         return ID;
     }
     public void validarCantidad(int cantidad){
-        if(cantidad < 0 || cantidad >= 1000){
+        if(cantidad <= 0 || cantidad >= 1000){
             throw new LimiteIDs("Posicion del ID fuera del rango " + cantidad);
         }
     }

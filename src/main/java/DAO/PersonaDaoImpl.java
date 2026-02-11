@@ -246,7 +246,7 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
             this.conectarse();
             ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.usuarios SET prestamoID = ? WHERE personaID = ?;");
             ps.setString(1, ejemplarID);
-            ps.setString(1, personaID);
+            ps.setString(2, personaID);
             int cambio = ps.executeUpdate();
             if(cambio > 0 ){
                 actualizado = true;

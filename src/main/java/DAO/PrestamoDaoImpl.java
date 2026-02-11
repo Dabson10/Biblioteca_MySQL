@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
     @Override
     public boolean setPrestamo(String prestamoID, String ejemplarID, String usuarioID,
-                               LocalDate fecha_prestamo, LocalDate fecha_entrega) {
+                               String fecha_prestamo, String fecha_entrega) {
         boolean guardado = false;
         try{
             PreparedStatement ps;
