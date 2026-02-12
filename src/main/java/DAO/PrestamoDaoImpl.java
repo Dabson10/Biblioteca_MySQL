@@ -6,7 +6,6 @@ import Interfaces.PrestamoDAO;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
             ps.setString(1, prestamoID);
             rs = ps.executeQuery();
             if(rs.next()){
-                //Si se realizo la consulta entonces guardamos los datos en el constructor creado
+                //Si se realizó la consulta entonces guardamos los datos en el constructor creado
                 String perID = rs.getString("personaID");
                 String nombres = rs.getString("nombres");
                 String apellidos = rs.getString("apellidos");
@@ -152,4 +151,47 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
         }
         return lista;
     }
+
+    @Override
+    public boolean updatePrestamo(String ID, java.util.Date fechaEntrega){
+        boolean actualizado = false;
+        try{
+            PreparedStatement ps;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.prestamo SET real_fecha_entrega = ?, activo = NOT activo WHERE prestamo_ID = ?; ");
+            ps.setDate(1, (Date) fechaEntrega);
+            ps.setString(2, ID);
+            int cambios = ps.executeUpdate();
+            if(cambios > 0){
+                //Si cambios es mayor a cero entonces regresamos un true;
+                actualizado = true;
+            }
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return actualizado;
+    }
+
+    @Override
+    public boolean borrarPrestamo(String ID){
+        boolean borrado = false;
+        try{
+            PreparedStatement ps;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("DELETE FROM biblioteca_mix.prestamo WHERE prestamo_ID = ?;");
+            ps.setString(1, ID);
+            int eliminado = ps.executeUpdate();
+            if(eliminado > 0 ){
+                borrado = true;
+            }
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return borrado;
+    }
+
 }

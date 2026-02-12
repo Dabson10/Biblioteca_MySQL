@@ -15,5 +15,6 @@ public interface PersonaDAO {
     public String obtenerUltimo(String prefijo);
     public UsuarioDTO validarCredenciales(String correo);
     public boolean prestarEjemplar(String personaID, String ejemplarID);
+    public boolean regresarEjemplar(String personaID, String mensaje);
 
 }

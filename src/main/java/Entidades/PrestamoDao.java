@@ -37,6 +37,15 @@ public class PrestamoDao {
         this.fecha_entrega = fecha_entrega;
         this.fecha_real_entrega = fecha_real_entrega;
     }
+    public Date getFecha_real_entrega(){
+        return fecha_real_entrega;
+    }
+    public String getPersonaID(){
+        return personaID;
+    }
+    public String getEjemplarID(){
+        return ejemplarID;
+    }
 
     public String mostrarDatos() {
         String diferencia = "";

@@ -2,6 +2,7 @@ package Interfaces;
 
 import Entidades.PrestamoDao;
 
+import java.util.Date;
 import java.util.List;
 
 public interface PrestamoDAO {
@@ -11,4 +12,7 @@ public interface PrestamoDAO {
 
     public PrestamoDao obtenerPrestamo(String prestamoID);
     public List<PrestamoDao> usuarioPrestamos(String correo);
+    public boolean updatePrestamo(String ID, Date fechaEntrega);
+    public boolean borrarPrestamo(String ID);
+
 }

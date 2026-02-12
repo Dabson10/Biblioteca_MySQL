@@ -259,5 +259,26 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
         return actualizado;
     }
 
+    @Override
+    public boolean regresarEjemplar(String personaID, String mensaje){
+        boolean cambio = false;
+        try{
+            PreparedStatement ps;
+            this.conectarse();
+            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.usuarios SET prestamoID = ? WHERE personaID = ?;");
+            ps.setString(1, mensaje);
+            ps.setString(2, personaID);
+            int update = ps.executeUpdate();
+            if(update > 0){
+                //Si cambio entonces regresamos un true
+                cambio = true;
+            }
+        }catch (Exception e){
+            System.out.println("Error del tipo: " + e.getMessage());
+        }finally {
+            this.cerrarConexion();
+        }
+        return cambio;
+    }
 
 }

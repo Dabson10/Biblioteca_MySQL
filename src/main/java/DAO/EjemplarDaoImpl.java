@@ -201,7 +201,7 @@ public class EjemplarDaoImpl extends Conexion implements EjemplarDao {
         try{
             PreparedStatement ps;
             this.conectarse();
-            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.ejemplar SET disponible = CASE WHEN disponible = true THEN false ELSE true END WHERE codigo_ejemplar = ?;");
+            ps = this.conectar.prepareStatement("UPDATE biblioteca_mix.ejemplar SET disponible = NOT disponible WHERE codigo_ejemplar = ?;");
             ps.setString(1, ejemplarID);
             int cambios = ps.executeUpdate();
             if(cambios > 0){

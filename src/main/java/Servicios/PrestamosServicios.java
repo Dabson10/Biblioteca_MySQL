@@ -15,6 +15,7 @@ import Interfaces.PrestamoDAO;
 import Utilidades.GenerarID;
 import Utilidades.ValidarCorreo;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class PrestamosServicios {
             switch(opcion){
                 case 1 -> menuBuscar();
                 case 2 -> realizarPrestamo();
-                case 3 -> {}
+                case 3 -> regresarLibro();
                 case 4 -> System.out.println("Regresando el menu inicial.");
                 default -> System.out.println("Ingrese una opción valida.");
             }
@@ -113,17 +114,15 @@ public class PrestamosServicios {
 
             System.out.println("\nSe prestara el ejemplar " + ejemplar.mostrarDatos() +
                     "\nAl usuario: " + persona.mostrarDatos()  );
-//        System.out.println("La fecha de préstamo es: " + fechaPrestamo);
-//        System.out.println("La fecha de regreso es: " + fechaRegreso);
             //Obtenemos el ID del prestamo
             String ultimoID = consultaPrestamo.ultimoPrestamo();
             String prestamoID = "";
             if(ultimoID != null){
                 //Si el valor es diferente a null entonces significa que existe algún ID
                 int numeroComple = ultimoID.indexOf("_");
-                System.out.println("El _ esta en la posición: " + numeroComple + " " + ultimoID );
+//                System.out.println("El _ esta en la posición:" + numeroComple + " " + ultimoID );
                 String IDprest = ultimoID.substring((numeroComple + 1));
-                System.out.println("El numero es: " + IDprest);
+//                System.out.println("El numero es: " + IDprest);
                 int numero = Integer.parseInt(IDprest);
             prestamoID = generarID.generarID("PREST", numero + 1);
             }else{
@@ -147,8 +146,6 @@ public class PrestamosServicios {
                 //Si me regresa un false entonces regresamos y no prestamos el ejemplar;
                 System.out.println("No se pudo actualizar el estado del libro.");
                 return;
-            }else{
-                System.out.println("Ejemplar actualizado");
             }
             boolean actualizarUsuario = consultaPersona.prestarEjemplar(usuario.getPersonaID(), ejemplarID);
             if(!actualizarUsuario){
@@ -160,10 +157,8 @@ public class PrestamosServicios {
                 if(actualizarEjemplar){
                     System.out.println("El ejemplar regreso a su estado inicial.");
                 }
-            }else{
-                System.out.println("Ejemplar actualizado");
             }
-            //Ahora realizamos la creación del prestamo.
+            System.out.println("Se realizo el prestamo correctamente.");
         }catch(CorreoNoValido correo){
             System.out.println(correo.getMessage());
         }
@@ -249,5 +244,77 @@ public class PrestamosServicios {
     }
 
     //======================| ACTUALIZAR PRÉSTAMO (update) |================
+
+    public void regresarLibro(){
+        try{
+            PrestamoDao prestamo = null;
+            System.out.println("""
+                \nRegresar ejemplares.
+                Ingrese los datos que le solicitan.""");
+            System.out.print("ID del préstamo: ");
+            String ID = sc.nextLine().trim().toUpperCase();
+            prestamo = consultaPrestamo.obtenerPrestamo(ID);
+            if(prestamo == null){
+                //Si es nulo regresamos
+                System.out.println("No se encontró el préstamo ingresado.");
+                return;
+            }
+            Date fechaEntregado = prestamo.getFecha_real_entrega();
+            if(fechaEntregado != null){
+                //Si el valor es diferente a null significa que ya se había entregado este libro, por lo que regresamos
+                System.out.println("Este préstamo ya fue regresado.");
+                return;
+            }
+            System.out.println(prestamo.mostrarDatos());
+            System.out.print("""
+                \nDesea regresar el ejemplar
+                1.Devolver ejemplar.
+                2.No devolver
+                Ingrese su opción:\s""");
+            int opcion = sc.nextInt();
+            if(opcion != 1){
+                //Si es diferente a uno entonces regresamos
+                System.out.println("No se regresara el ejemplar.");
+                return;
+            }
+            //Primeramente, se actualizará el prestamo con la fecha en el que se entregó el ejemplar.
+            Date fechaNow = fechaActual();
+            //1. Primero realizaremos el cambio en prestamo
+            boolean prestCambio = consultaPrestamo.updatePrestamo(ID, fechaNow);
+            if(!prestCambio){
+                //Si regresa un valor significa que no se actualizó el ejemplar.
+                System.out.println("No se pudo actualizar el prestamo.");
+                return;
+            }
+            //Si procede entonces realizamos la siguiente consulta.
+            //2. Actualizamos los datos del usuario
+            String personaID = prestamo.getPersonaID();
+            boolean usuCambio = consultaPersona.regresarEjemplar(personaID, "Sin prestamos");
+            if(!usuCambio){
+                //Si regresa un false entonces es por que no se regreso el dato.
+                System.out.println("No se actualizo el usuario.");
+                return;
+            }
+            //Siguiente consulta.
+            String ejemplarID = prestamo.getEjemplarID();
+            //3. Actualizamos el ejemplar
+            boolean ejempCambio = consultaEjemplar.cambiarEstado(ejemplarID);
+            if(!ejempCambio){
+                //Si regresa un false es por que no se actualizo el ejemplar.
+                System.out.println("No se actualizo ejemplares");
+                return;
+            }
+            System.out.println("Se devolvió correctamente el ejemplar.");
+            System.out.println("El usuario ahora puede otro libro.");
+        }catch(InputMismatchException tipos){
+            System.out.println("Ingrese los datos que le solicitan.");
+        }
+
+    }
+
+    public Date fechaActual(){
+        LocalDate fechaNow = LocalDate.now();
+        return Date.valueOf(fechaNow);
+    }
 
 }
