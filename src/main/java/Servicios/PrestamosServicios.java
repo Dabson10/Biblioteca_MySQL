@@ -4,8 +4,10 @@ import DAO.EjemplarDaoImpl;
 import DAO.PersonaDaoImpl;
 import DAO.PrestamoDaoImpl;
 import Entidades.Ejemplar;
+import Entidades.PrestamoDao;
 import Entidades.Usuarios.Persona;
 import Entidades.Usuarios.Usuario;
+import Entidades.Usuarios.UsuarioDTO;
 import Exceptions.CorreoNoValido;
 import Interfaces.EjemplarDao;
 import Interfaces.PersonaDAO;
@@ -15,7 +17,9 @@ import Utilidades.ValidarCorreo;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class PrestamosServicios {
@@ -40,7 +44,7 @@ public class PrestamosServicios {
             int opcion = sc.nextInt();
             sc.nextLine();
             switch(opcion){
-                case 1 -> {}
+                case 1 -> menuBuscar();
                 case 2 -> realizarPrestamo();
                 case 3 -> {}
                 case 4 -> System.out.println("Regresando el menu inicial.");
@@ -171,15 +175,16 @@ public class PrestamosServicios {
     public void menuBuscar(){
         try{
             System.out.print("""
-                ¿Como deseas buscar el prestamo?
+                ¿Como deseas buscar el préstamo?
                 1.Correo del usuario.
                 2.Por ID.
                 3.Regresar al menu inicial.
                 Ingrese su opción:\s""");
             int opcion = sc.nextInt();
+            sc.nextLine();
             switch(opcion){
-                case 1 -> {}
-                case 2 -> {}
+                case 1 -> buscarCorreo();
+                case 2 -> buscarPorID();
                 case 3 -> System.out.println("Regresando al menu inicial.");
                 default -> System.out.println("Ingrese una opción valida");
             }
@@ -189,19 +194,59 @@ public class PrestamosServicios {
     }
 
     public void buscarCorreo(){
-        System.out.println("""
+        try{
+            List<PrestamoDao> lista = new ArrayList<>();
+            System.out.println("""
                 Buscar por corre electrónico.
                 Ingrese los datos solicitados.
                 """);
-        System.out.print("Correo electrónico: ");
-        String correo = sc.nextLine();
+            System.out.print("Correo electrónico: ");
+            String correo = sc.nextLine();
 
-        if(!validarCorreo.validarCorreo(correo)){
-            System.out.println("Ingrese un correo electrónico valido");
+            if(!validarCorreo.validarCorreo(correo)){
+                System.out.println("Ingrese un correo electrónico valido");
+            }
+            //Validamos que el correo ingresado exista y sea de un usuario.
+            UsuarioDTO usuario = consultaPersona.validarCredenciales(correo);
+            if (usuario == null) {
+                //Regresamos
+                return;
+            }
+            //Si llega un null lo cancelamos simplemente regresando al menu inicial
+            if(!usuario.getRol().equals("Bibliotecario")){
+                System.out.println("Los bibliotecarios no pueden pedir libros.");
+            }
+            //Ahora sabiendo que existe el correo realizamos la consulta para traer los datos de Usuario, Ejemplares y Libros
+            lista = consultaPrestamo.usuarioPrestamos(correo);
+            if(lista.isEmpty()){
+                //Si la lista esta vacia entonces regresamos
+                return;
+            }
+            //Ahora imprimimos lo que hay en la lista.
+            lista.forEach(list ->{
+                System.out.println(list.mostrarDatos());
+            });
+        }catch (NullPointerException vacios){
+            System.out.println("Existe algun valor vacio");
         }
 
-    }
 
+    }
+    public void buscarPorID(){
+        PrestamoDao prestamo = null;
+        System.out.print("ID del préstamo: ");
+        String ID = sc.nextLine().trim().toUpperCase();
+        prestamo = consultaPrestamo.obtenerPrestamo(ID);
+        if(prestamo == null){
+            //Regresamos.
+            return;
+        }
+        System.out.println("Prestamo con ID " + ID + " encontrado." );
+        System.out.println(prestamo.mostrarDatos());
+        menuPrestamo();
+
+
+    }
 
     //======================| ACTUALIZAR PRÉSTAMO (update) |================
 
