@@ -22,6 +22,8 @@ public class LibrosServicios {
     EjemplarDao consultaEjemplar = new EjemplarDaoImpl();
     GenerarID generarID = new GenerarID();
     Login login = new Login();
+
+    ///  Esta función sirve para mostrar el menu de Libros y ejemplares.
     public void menuLibroEjemplar(){
         try{
             System.out.print("""
@@ -44,6 +46,8 @@ public class LibrosServicios {
     }
 
     //======================| MENU LIBROS. |===========================
+    ///  Este menu servirá para dirigir la opcion ingresada ya sea a buscar libros o ingresar libros. <br>
+    ///Al igual que {@link #menuEjemplares()}
     public void menuLibros(){
         int opcion = mensajeMenu("Libros");
         sc.nextLine();
@@ -63,6 +67,7 @@ public class LibrosServicios {
     }
 
     //======================| MENU EJEMPLARES. |===========================
+    ///  Este menu sirve para dirigir la opción ingresada ya sea a {@link #mostrarEjemplares()} o {@link #agregarMasEjemplares()}
     public void menuEjemplares(){
         int opcion = mensajeMenu("Ejemplares");
         sc.nextLine();
@@ -84,6 +89,12 @@ public class LibrosServicios {
     }
 
     //======================|  MOSTRAR LIBROS. |===========================
+
+    /**
+     * Esta opción es la primera para mostrar libros, podemos encontrar <br>
+     * <b>{@link #buscarAutor()} </b> : Con esta función listamos todos los libros guardados del autor. <br>
+     * <b>{@link #buscarISBN()}</b> : Con esta función obtenemos un libro mediante el ISBN.
+     */
     public void obtenerLibro(){
         try{
             System.out.println("\n==== Mostrar Libros. ====");
@@ -106,6 +117,10 @@ public class LibrosServicios {
         }
     }
 
+    /**
+     * Esta función es la que listara los libros del autor. <br>
+     * Aquí contamos con una validación, si la lista está vacía entonces mostramos un mensaje basico.
+     */
     public void buscarAutor(){
         List<Libro> listaLibro;
         System.out.print("Nombre del autor: ");
@@ -125,6 +140,8 @@ public class LibrosServicios {
         });
     }
 
+    /// Esta función sirve para mostrar un Libro mediante el ISBN,
+    /// Si el usuario no existe entonces muestra un a validación simple para saber si el objeto es null o no.
     public void buscarISBN(){
         Libro libro = null;
         System.out.println("Obtener libro por ISBN");
@@ -140,6 +157,7 @@ public class LibrosServicios {
     }
 
     //======================| AGREGAR LIBROS. |===========================
+    /// Esta función sirve para agregar nuevos libros.
     public boolean agregarLibros(){
         boolean acceso = false;
         System.out.print("""
@@ -149,7 +167,7 @@ public class LibrosServicios {
                 """);
         System.out.print("ISBN del libro: ");
         String ISBN = sc.nextLine();
-        //La primera validación empieza aquí.
+        //1. Validá que el libro exista.
         if(consultaLibros.validarISBN(ISBN)){
             //Si regresa un true entonces existe el valor, por lo que no debemos guardarlo.
             System.out.println("Libro con ISBN existente.");
@@ -162,7 +180,8 @@ public class LibrosServicios {
         String categoria = sc.nextLine().trim();
         System.out.print("Año de salida: ");
         String year = sc.nextLine().trim();
-        if(year.length() < 4 ){
+        //2. Validá que el año establecido se contenga al menos 4 caracteres
+        if(year.length() != 4){
             System.out.println("Ingrese una año como: (2020) con 4 dígitos");
             return false;
         }
@@ -173,20 +192,22 @@ public class LibrosServicios {
         String prefijo = (categoria.substring(0,2) + autor.substring(0,2)+ titulo.substring(0, 2) + year.substring(2, 4)).toUpperCase();
         //Ahora guardamos los valores en la base de datos, sabiendo que no hay ISBN repetidos.
         boolean agregado = consultaLibros.setLibro(ISBN, titulo, categoria, autor, prefijo);
+        //3. Valida que el Libro se guardo, si se guardo entonces procedemos con el guardado de datos
         if(agregado){
             //Si se agregó el libro entonces procedemos con la función de cantidad de ejemplares.
-            int cantidad = agregarEjemplares(prefijo, ISBN);
-            if(cantidad > 0){
-                //Si la cantidad es mayor a cero entonces se guardó al menos 1.
-                acceso = true;
-            }
+            agregarEjemplares(prefijo, ISBN);
         }
         return acceso;
     }
 
     //======================| AGREGAR EJEMPLARES. |===========================
-    //Agregar ejemplares cuando se crea un nuevo Libro.
-    public int agregarEjemplares(String prefijo, String ISBN){
+
+    /**
+     * Esta función sirve para obtener los datos de los ejemplares que se agregaran al instante de agregar un Libro.
+     * @param prefijo : El prefijo será obtenido por {@code categoria}, {@code autor} y {@code Titulo} obteniendo dos caracteres de cada atributo.
+     * @param ISBN : ISBN del libro.
+     */
+    public void agregarEjemplares(String prefijo, String ISBN){
         boolean agregado;
         int contador = 0;
         try{
@@ -212,23 +233,26 @@ public class LibrosServicios {
         }catch (InputMismatchException tipo){
             System.out.println("Ingrese correctamente los datos que le piden.");
         }
-        return contador;
     }
 
-    //Agrega ejemplares a ya los existentes.
+    /**
+     * Esta función sirve para agregar más ejemplares, esta es diferente a {@link #agregarEjemplares(String, String)}, ya que
+     * en esta agregamos ejemplares sobre los ejemplares existentes, por lo que ya no se obtendran los datos del ejemplar,
+     * ya que se reutilizaran los atributos de los existentes.
+     */
     public void agregarMasEjemplares(){
         try{
             EjemplarDAO ejemplar;
             System.out.print("\nIngrese el prefijo del ejemplar: ");
             String prefijo = sc.nextLine();
             ejemplar = consultaEjemplar.ultimoEjemplar(prefijo);
-
+            //1. Validá que exista el ejemplar.
             if(ejemplar != null){
                 System.out.println("El ultimo ID es: " + ejemplar.getID());
                 //Si ejemplar es diferente a null entonces mostramos los datos y le decimos al usuario si realmente quiere agregar mas ejemplares.
                 System.out.println(ejemplar.mostrarDatos());
             }else{
-                System.out.println("No se encontro el ejemplar con el ISBN ingresado.");
+                System.out.println("No se encontró el ejemplar con el ISBN ingresado.");
                 return;
             }
             System.out.print("""
@@ -238,6 +262,7 @@ public class LibrosServicios {
                 Ingrese su opción:\s""");
             int opc = sc.nextInt();
             if(opc == 1){
+                //2. Esta función es la que agrega los datos de los nuevos ejemplares.
                 datosEjemplar(ejemplar, prefijo);
             }else{
                 System.out.println("Regresando al menu inicial.");
@@ -247,6 +272,11 @@ public class LibrosServicios {
         }
     }
 
+    /**
+     * Esta función es para obtener los datos del ejemplar.
+     * @param ejemplar : Objeto que tiene los datos fundamentales del ejemplar.
+     * @param prefijo : Con este prefijo podemos hacer un ID nuevo para los ejemplares.
+     */
     public void datosEjemplar(EjemplarDAO ejemplar, String prefijo){
 
         String ultimo = ejemplar.getID();
@@ -255,12 +285,18 @@ public class LibrosServicios {
         int longitud = ultimo.length();
         //Obtenemos el último número de los ejemplares.
         int numero = Integer.parseInt(ultimo.substring((inicio + 1), longitud));
-        //Ahora teniendo ya el ultimo numero realizamos el bucle, creando ais un nuevo ID
+        //Ahora teniendo ya el último número realizamos el bucle, creando ais un nuevo ID
         String ID = (generarID.generarID(prefijo, (numero + 1))).toUpperCase();
         //Ahora toca realizar el bucle para guardar los datos.
         bucleAgregarMas(ejemplar, numero, prefijo);
     }
 
+    /**
+     * Esta función es la que realizara el guardado de datos.
+     * @param ejemplar : Objeto que contiene datos fundamentales.
+     * @param numero : Ultimo numero del ultimo ID
+     * @param prefijo : El prefijo del ejemplar.
+     */
     public void bucleAgregarMas(EjemplarDAO ejemplar, int numero, String prefijo){
         try{
             String ISBN = ejemplar.getISBN();
@@ -401,6 +437,8 @@ public class LibrosServicios {
     }
 
     //======================| MOSTRAR EJEMPLARES. |===========================
+
+   /// Función que realiza la búsqueda de ejemplares mediante el ID.
     public void mostrarEjemplares(){
         Ejemplar ejemplar;
         System.out.println("Buscar ejemplar por ID.");
@@ -417,6 +455,8 @@ public class LibrosServicios {
         }
     }
     //======================| MENSAJE GENÉRICO LIBROS Y EJEMPLARES. |===========================
+
+    /// Mensaje genérico para las secciones de menu
     public int mensajeMenu(String area){
         int opcion = 0;
         int numero = (area.equals("Ejemplares"))? 4 : 3;
@@ -438,14 +478,12 @@ public class LibrosServicios {
     }
 
     //======================| BUCLES PARA AGREGAR Y MOSTRAR LIBROS Y EJEMPLARES. |===========================
-    public void bucleMostrarISBN(){
-    }
     public void bucleLibros(){
-        boolean continuar = false;
+        boolean continuar;
         for(int i = 0; i < 3; i++){
             continuar = agregarLibros();
             if(continuar){
-                //Si continuar es true significa que se guardó el libro correctamente, por lo que debemos terminar el bulce.
+                //Si continuar es true significa que se guardó el libro correctamente, por lo que debemos terminar el bulge.
                 break;
             }else{
                 System.out.println("Estas en el intento " + ( i + 1) + ", el limite es: 3");
@@ -453,7 +491,4 @@ public class LibrosServicios {
         }
     }
 
-    public void bucleEjemplares(){
-
-    }
 }
