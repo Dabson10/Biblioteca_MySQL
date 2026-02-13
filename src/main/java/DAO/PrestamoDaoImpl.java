@@ -9,7 +9,22 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Esta clase sirve para realizar las consultas a base de datos, esta hereda de la clase
+ * {@code Conexion} para establecer conexión al realizar consultas, e implementa de la clase
+ * {@code PrestamoDAO} en donde se declararon las funciones que se utilizaran para realizar las consultas.
+ *
+ */
 public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
+    /**
+     * Esta función sirve para guardar un prestamo nuevo.
+     * @param prestamoID : ID del préstamo.
+     * @param ejemplarID : ID del ejemplar prestado.
+     * @param usuarioID : ID del usuario al que se le présto el ejemplar.
+     * @param fecha_prestamo : La fecha en la que el usuario realizo el préstamo.
+     * @param fecha_entrega : Será la fecha en la que se entregara el ejemplar, més o menos 2 semanas
+     * @return : Si se realiza la consulta entonces regresara un {@code true}, si no un {@code false}
+     */
     @Override
     public boolean setPrestamo(String prestamoID, String ejemplarID, String usuarioID,
                                String fecha_prestamo, String fecha_entrega) {
@@ -39,6 +54,11 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
         return guardado;
     }
 
+    /**
+     * Esta función servirá para saber cuál fue el último prestamo realizado, sabiendo esto podemos crear otro,
+     * aunque en esta sección no se hace eso.
+     * @return : Regresará el último ID o una cadena vacía.
+     */
     @Override
     public String ultimoPrestamo() {
         String ID = "nada";
@@ -60,6 +80,14 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
         return ID;
     }
 
+    /**
+     * Esta función es la más importante junto con {@link #usuarioPrestamos(String)} ya que ambas realizan una
+     * búsqueda en la tabla de {@code Usuarios}, {@code Ejemplares} y {@code Libros} para asi poder obtener los datos
+     * del prestamo.<br>
+     * Pero en esta función solo se obtiene un prestamo.
+     * @param prestamoID : Con el ID del préstamo realizaremos la búsqueda del libro, usuario, ejemplar.
+     * @return Regresará un objeto del tipo PréstamoDao en el cual se guardaran valores fundamentales para mostrar.
+     */
     @Override
     public PrestamoDao obtenerPrestamo(String prestamoID){
         PrestamoDao prestamo = null;
@@ -105,6 +133,13 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
         return prestamo;
     }
 
+    /**
+     * Esta función es similar a {@link #obtenerPrestamo(String)} la unicadiferencia es que en esta función
+     * buscamos mediante el correo electronico y obtenemos todos los préstamos realizados por el usuario
+     * @param correo : Con el correo se realizará la búsqueda.
+     * @return : Regresara una lista del tipo PrestamoDao, si no se encontro nada entonces se validara con un
+     * {@code lista.isEmpty()}
+     */
     @Override
     public List<PrestamoDao> usuarioPrestamos(String correo){
         List<PrestamoDao> lista = new ArrayList<>();
@@ -152,6 +187,13 @@ public class PrestamoDaoImpl extends Conexion implements PrestamoDAO {
         return lista;
     }
 
+    /**
+     * En esta funcin se realiza el cambio de prestado a libro regresado por asi decirlo, ya que se cambia la fecha real
+     * de entrega y el estatus del prestamo.
+     * @param ID : Con este ID realizaremos la búsqueda del prestamo.
+     * @param fechaEntrega : Ser la fecha de cuando se entregó el libro.
+     * @return : Si se realizo la actualización entonces regresara un true.
+     */
     @Override
     public boolean updatePrestamo(String ID, java.util.Date fechaEntrega){
         boolean actualizado = false;

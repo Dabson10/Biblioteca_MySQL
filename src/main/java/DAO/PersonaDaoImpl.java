@@ -10,6 +10,12 @@ import Interfaces.PersonaDAO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+/**
+ * Esta clase sirve para realizar las consultas a base de datos, esta hereda de la clase
+ * {@code Conexion} para establecer conexión al realizar consultas, e implementa de la clase
+ * {@code PersonaDAO} en donde se declararon las funciones que se utilizaran para realizar las consultas.
+ *
+ */
 public class PersonaDaoImpl extends Conexion implements PersonaDAO {
     /**
      * La siguiente función sirve para realizar una consulta del tipo INSERT en la tabla {@code usuarios} y los parámetros
@@ -105,6 +111,14 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
         return persona;
     }
 
+    /**
+     *Esta función sirve para obtener los datos del usuario, a diferencia de la función pasada esta se
+     * realiza la búsqueda mediante el correo electrónico.
+     * @param correo : Correo con el que se realizara la búsqueda en la base de datos.
+     * @return Regresará un objeto del tipo Persona, ya depende del programador saber qué hacer con este objeto.
+     * Si acceder a los datos del Bibliotecario o del Usuario sería hacer un DownCast. Aunque debes cuidar los
+     * valores null por si no se encuentra al usuario
+     */
     @Override
     public Persona correoPersona(String correo){
         Persona persona = null;
@@ -145,11 +159,6 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
             this.cerrarConexion();
         }
         return persona;
-    }
-
-    @Override
-    public void editarPersona(Persona datos, String nombre) {
-
     }
 
     /**
@@ -214,6 +223,13 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
         return ID;
     }
 
+    /**
+     * Esta función es necesaria y relevante ya que con esta podemos realizar validaciones en Login, saber que
+     * tipo de usuario es mediante el rol, etc.
+     * @param correoIn : Forma en la que realizaremos la búsqueda.
+     * @return : Regresará un Objeto del tipo UsuarioDTO, con datos como correo, clave y rol. Aunque no debemos olvidar
+     * de valores nulos y el prevenirlos.
+     */
     @Override
     public UsuarioDTO validarCredenciales(String correoIn){
         UsuarioDTO usuario = null;
@@ -238,6 +254,12 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
         return usuario;
     }
 
+    /**
+     * Esta función servirá para agregar el ID del ejemplar que se le presto al usuario.
+     * @param personaID : Con el ID se buscará si existe el usuario.
+     * @param ejemplarID : El ejemplar que se agregara.
+     * @return : Si se actualizo regresara un{@code true} si no un {@code false}
+     */
     @Override
     public boolean prestarEjemplar(String personaID, String ejemplarID) {
         boolean actualizado = false;
@@ -259,6 +281,12 @@ public class PersonaDaoImpl extends Conexion implements PersonaDAO {
         return actualizado;
     }
 
+    /**
+     * Esta función servirá para cuando el usuario regrese el libro.
+     * @param personaID : Con el ID del usuario se realizará la busqueda.
+     * @param mensaje : Se guardará un valor predeterminado como {@code Sin prestamo}
+     * @return : Si realizo el cambio regresara un {@code true}, si no un {@code false}
+     */
     @Override
     public boolean regresarEjemplar(String personaID, String mensaje){
         boolean cambio = false;

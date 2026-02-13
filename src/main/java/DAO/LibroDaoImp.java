@@ -2,14 +2,27 @@ package DAO;
 
 import Entidades.Libro;
 import Interfaces.LibroDAO;
-
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Esta clase sirve para realizar las consultas a base de datos, esta hereda de la clase
+ * {@code Conexion} para establecer conexión al realizar consultas, e implementa de la clase
+ * {@code LibroDao} en donde se declararon las funciones que se utilizaran para realizar las consultas.
+ */
 public class LibroDaoImp extends Conexion implements LibroDAO {
+    /**
+     * Esta función sirve para guardar un Libro en la base de datos.
+     * @param ISBN : Numero identificador del Libro
+     * @param titulo : Nombre del libro
+     * @param categoria : Categoria del libro.
+     * @param autor : Nombre del autor
+     * @param prefijo_ejemplar : El prefijo es una combinación de {@code Categoria} {@code Autor} {@code Titulo} usando las
+     *                         dos primeras letras de cada atributo.
+     * @return Si la consulta se concreto regresa un {@code true}, si no un {@code false}
+     */
     @Override
     public boolean setLibro(String ISBN, String titulo, String categoria, String autor, String prefijo_ejemplar) {
         boolean guardado = false;
@@ -39,6 +52,12 @@ public class LibroDaoImp extends Conexion implements LibroDAO {
         return guardado;
     }
 
+    /**
+     * Esta función sirve para obtener los datos del libro
+     * @param ISBN : Medio por el cual buscamos el libro.
+     * @return Si la consulta se concretó regresa el objeto, si no un null, por esto mismo es necesario saber manejar
+     * el valor de regreso, ya que nos puede salir un  {@code NPE}
+     */
     @Override
     public Libro obtenerLibro(String ISBN) {
         Libro libro = null;
@@ -64,10 +83,15 @@ public class LibroDaoImp extends Conexion implements LibroDAO {
         return libro;
     }
 
+    /**
+     * Esta función sirve para listar los libros del autor.
+     * @param autor : Con el nombre realizaremos la búsqueda de libros.
+     * @return Regresará una lista con los libros del autor. Si no se encuentra al autor entonces regresará una
+     * lista vacía.
+     */
     @Override
     public List<Libro> listarPorAutor(String autor){
         List<Libro> libros = new ArrayList<>();
-        Libro libro = null;
         try{
             this.conectarse();
             PreparedStatement ps;
@@ -95,11 +119,12 @@ public class LibroDaoImp extends Conexion implements LibroDAO {
         return libros;
     }
 
-    @Override
-    public void editarLibro() {
-
-    }
-
+    /**
+     * Esta función sirve para cuando se quiere agregar un nuevo libro válida que el nuevo libro no tenga el mismo
+     * ISBN y asi no existan repetidos.
+     * @param ISBN : Valor con el que realizaremos la búsqueda.
+     * @return Si la consulta encontró un similar regresa un {@code true}, si no un {@code false}
+     */
     @Override
     public boolean validarISBN(String ISBN){
         boolean existe = false;

@@ -8,6 +8,7 @@ import Entidades.Libro;
 import Interfaces.EjemplarDao;
 import Interfaces.LibroDAO;
 import Utilidades.GenerarID;
+import Utilidades.Login;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -20,6 +21,7 @@ public class LibrosServicios {
     LibroDAO consultaLibros = new LibroDaoImp();
     EjemplarDao consultaEjemplar = new EjemplarDaoImpl();
     GenerarID generarID = new GenerarID();
+    Login login = new Login();
     public void menuLibroEjemplar(){
         try{
             System.out.print("""
@@ -49,7 +51,12 @@ public class LibrosServicios {
             //Opción mostrar Libros
             case 1 -> obtenerLibro();
             //Opción agregar Libros
-            case 2 -> bucleLibros();
+            case 2 -> {
+                boolean log = login.login();
+                if(log){
+                bucleLibros();
+                }
+            }
             case 3 -> System.out.println("Regresando al menu inicial.");
             default -> System.out.println("Ingrese una opción correcta");
         }
@@ -63,7 +70,12 @@ public class LibrosServicios {
             //Opción mostrar Ejemplares
             case 1 -> mostrarEjemplares();
             //Opción agregar Ejemplares
-            case 2 ->agregarMasEjemplares();
+            case 2 ->{
+                boolean log = login.login();
+                if(log) {
+                    agregarMasEjemplares();
+                }
+            }
             //Opción para editar Ejemplares
             case 3 -> menuEditar();
             case 4 -> System.out.println("Regresando al menu inicial.");
@@ -103,13 +115,14 @@ public class LibrosServicios {
 
         if(listaLibro.isEmpty()){
             //Si la lista esta vacia entonces regresamos y mostramos una alerta.
-            System.out.println("El autor " + autor + " no tiene libros guardados." );
-        }else{
-            listaLibro.forEach(libro -> {
-                System.out.println(libro.mostrarDatos());
-            });
+            System.out.println("No tenemos libros guardados de: " + autor);
+            return;
         }
-
+        int cantidad = listaLibro.size();
+        System.out.println("\nContamos con " + cantidad + " de títulos del autor: " + autor);
+        listaLibro.forEach(libro -> {
+            System.out.println(libro.mostrarDatos());
+        });
     }
 
     public void buscarISBN(){

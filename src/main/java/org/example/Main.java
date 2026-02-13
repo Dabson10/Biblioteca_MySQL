@@ -15,6 +15,10 @@ public class Main {
     LibrosServicios serviciosLibros = new LibrosServicios();
     PrestamosServicios servicioPrest = new PrestamosServicios();
 
+    /**
+     *  Este es el método principal, en donde se realizara el bucle para
+     *  que el programa funcione correctamente.
+     */
     public static void main(String[] args) {
         boolean acceso = true;
 
@@ -27,7 +31,11 @@ public class Main {
     }
 
 
-
+    /**
+     * Esta función sirve como menu para seleccionar a que aréa se dirigirá el usuario. <br>
+     * Maneja errores básicos como {@code InputMismatchException}
+     * @return Si ingresa del 1 al 3 regresara un true, si regresa un 4 un false para asi terminar el programa.
+     */
     public boolean menuPrincipal(){
         boolean salida = true;
         int opcion;
