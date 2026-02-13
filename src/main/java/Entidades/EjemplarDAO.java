@@ -15,12 +15,6 @@ public class EjemplarDAO {
         this.tipo = tipo;
     }
 
-//    public EjemplarDAO(String ID, String ISBN, boolean disponible){
-//        this.ID = ID;
-//        this.ISBN = ISBN;
-//        this.disponible = disponible;
-//    }
-
     public String getID(){
         return ID;
     }

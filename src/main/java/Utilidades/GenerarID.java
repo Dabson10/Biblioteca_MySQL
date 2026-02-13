@@ -44,7 +44,7 @@ public class GenerarID {
      * @param cantidad :El número que se introducirá en el ID de la función de {@link #generarID(String, int)}
      */
     public void validarCantidad(int cantidad){
-        if(cantidad <= 0 || cantidad >= 1000){
+        if(cantidad <= 0 || cantidad >= 10000){
             throw new LimiteIDs("Posición del ID fuera del rango " + cantidad);
         }
     }

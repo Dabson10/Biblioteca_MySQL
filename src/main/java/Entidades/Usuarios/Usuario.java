@@ -1,7 +1,4 @@
 package Entidades.Usuarios;
-
-import Entidades.Ejemplar;
-
 public class Usuario extends Persona{
 
     private String libroPrestado;
